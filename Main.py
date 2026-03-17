@@ -44,14 +44,10 @@ def run(N, IDmsats, Musat, Muiloc, Gmax, Sm=0.5):
     f.write("      " + "   ".join(["_".join([str(i), str(IDmsats[i])],)  for i in range(nMsats)])+"\n")
     f.write("Anc   "+"   ".join([str(r) for r in repeats])+"\n")
 
-
     for g in range(1, Gmax+1):
         gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt)
         #gen_incr_m2(N, N2, IDmsats, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm)
-        nuc, cyt = tmp_nuc, tmp_cyt
-        if g%1000==0:
-            print(g)
-
+        nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
 
     Nm = np.sum(nuc[1:N2:2, 0])
     Nf = N-Nm
@@ -71,23 +67,19 @@ def run(N, IDmsats, Musat, Muiloc, Gmax, Sm=0.5):
         f.write("allele"+"  "+"counts\n")
         for j in range(len(tab_sat[0])):
             f.write(str(tab_sat[0][j])+"    "+str(tab_sat[1][j])+"\n")
-        print("microsatellite locus "+ IDmsats[i] + ": ")
         F = sum((tab_sat[1]/N2)**2)
-        #print("homozygosity based theta :")
         thetaF = 0.5*(1/(F**2) - 1)
-        print("thetaF : " + str(thetaF))
-        Ne = thetaF/(4*Musat)
         lthetaF[i] = thetaF
-        print("effective popualtion size : " + str(Ne))
         Vs = np.var(nuc[:, i+2])
         thetaV = 2*Vs
-        print("thetaV : " +str(thetaV))
-        Ne = thetaV/(4*Musat)
-        print("effective popualtion size : " + str(Ne))
         lthetaV[i] = thetaV
 
-    print("mean thetaF :", np.mean(lthetaF))
-    print("mean thetaV :", np.mean(lthetaV))
+    thetaF = np.mean(lthetaF)
+    thetaV = np.mean(lthetaV)
+    print("mean thetaF :", thetaF)
+    print("estimated pop size", thetaF/(4*Musat))
+    print("mean thetaV :", thetaV)
+    print("estimated pop size", thetaV/(4*Musat))
     print("sex ratio :" +str(Nm/(Nm+Nf)))
     Ne = (Nm*Nf*4)/(Nm+Nf)
     print("population size estimated from sex ratio : " + str(Ne))
@@ -98,10 +90,9 @@ def run(N, IDmsats, Musat, Muiloc, Gmax, Sm=0.5):
     He = 1 - sum(freqs**2)
     thetaC = He/((1-He))
     print("cyt theta :" +str(thetaC))
-    print("estimated effective pop size : " + str(thetaC/(4*Muiloc)))
+    print("estimated effective pop size : " + str(thetaC/(2*Muiloc)))
     print("number of female:",str(Nf))
     print("estimated pop size:",str(Nf/2))
-
     f.close()
     return
 
@@ -110,7 +101,7 @@ try:
 except:
     pass
 
-Musat = 0.5e-2
-N = 5000
+Musat = 1e-2
+N = 500
 print("theta theo : " + str(4*N*Musat))
-run(N,[chr(i+65) for i in range(26)], Musat, Musat, 20000)
+run(N,[chr(i+65) for i in range(25)], Musat, Musat, 4000)

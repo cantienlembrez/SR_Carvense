@@ -16,21 +16,17 @@ def gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt):
 
 
         #recombination
-        gam0 = recombi_ind(nuc[(p1_id,p1_id+1),], nMsats)
-        gam1 = recombi_ind(nuc[(p2_id,p2_id+1),], nMsats)
+        tmp_nuc[i*2,:] = recombi_ind(nuc[(p1_id,p1_id+1),], nMsats)
+        tmp_nuc[i*2+1,:] = recombi_ind(nuc[(p2_id,p2_id+1),], nMsats)
 
-        #mutation
-        nMut = np.random.poisson(Musat*nMsats, 2)
-        mutation_msat(gam0, nMut[0], nMsats)
-        mutation_msat(gam1, nMut[1], nMsats)
-
-        tmp_nuc[i*2,:] = gam0
-        tmp_nuc[i*2+1,:] = gam1
-        #cytotype
+        #cytotype transmission
         tmp_cyt[i] = cyt[p1_id//2]
-    tmp_nuc[:,1] = mutations_iloc(N2, tmp_nuc[:,1], Muiloc)
+
+    #mutation of all offspring
+    mutation_msat(N2, nMsats, Musat, tmp_nuc[:,2:])
+    mutations_iloc(N2, Muiloc, tmp_nuc[:,1])
     #mutate all the cytotypes
-    tmp_cyt = mutations_iloc(N, tmp_cyt, Muiloc)
+    tmp_cyt = mutations_iloc(N, Muiloc, tmp_cyt)
     return
 
 
@@ -48,22 +44,15 @@ def gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
         if nuc[p1_id+1,0]==1:
             p1_id, p2_id = p2_id, p1_id
 
-
         #recombination
-        gam0 = recombi_ind(nuc[p1_id:(p1_id+1),:], nMsats)
         gam1 = recombi_ind(nuc[p2_id:(p2_id+1),:], nMsats)
         if gam1[0]!=1 or np.random.rand()<Sm:
-            #mutation
-            nMut = np.random.poisson(Musat*nMsats, 2)
-            mutation_msat(gam0, nMut[0], nMsats)
-            mutation_msat(gam1, nMut[1], nMsats)
-
-            tmp_nuc[i*2,:] = gam0
-            tmp_nuc[i*2+1,:] = gam1
-            #cytotype
+            gam0 = recombi_ind(nuc[p1_id:(p1_id+1),:], nMsats)
             tmp_cyt[i] = cyt[p1_id//2]
             i+=1
-    tmp_nuc[:,1] = mutations_iloc(N2, tmp_nuc[:,1], Muiloc)
-    #mutate all the cytoplams
-    mutations_cyt(N, tmp_cyt, Muiloc)
+    #mutation of all offspring
+    mutation_msat(N2, nMsats, Musat, tmp_nuc[:,2:])
+    mutations_iloc(N2, Muiloc, tmp_nuc[:,1])
+    #mutate all the cytotypes
+    tmp_cyt = mutations_iloc(N, Muiloc, tmp_cyt)
     return
