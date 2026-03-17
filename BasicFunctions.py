@@ -1,24 +1,24 @@
 import numpy as np
 
-def mutations_cyt(N, pop_cyt, Mucyt):
-    nMu = np.random.poisson(N*Mucyt)
-    idx = np.random.choice(range(N), nMu)
-    pop_cyt[idx] = np.random.rand(nMu)
-    return
+def mutations_iloc(N, pop, Mu):
+    nMu = np.random.poisson(N*Mu)
+    idx = np.random.choice(range(N), nMu, replace = True)
+    pop[idx] = np.random.rand(nMu)*1e16 #use int for practicity
+    return pop
 
 def mutation_msat(seq, nMut, nMsats):
-    MutMsatsIndex = np.random.choice(range(nMsats), nMut) + 1 #+1 for the sex locus
-    Additional_repeats = np.random.choice([-1, 1], nMut)
+    MutMsatsIndex = np.random.choice(range(nMsats), nMut, replace = True) + 2 #+2 for the sex locus and the neutral locus
+    Additional_repeats = np.random.choice([-1, 1], nMut, replace = True)
     seq[MutMsatsIndex] = seq[MutMsatsIndex] + Additional_repeats
     return
 
 def recombi_ind(c1c2, nMsats):
     """return recombination of c1 with c2 whith nCo crossing over
-    c1c2: array 2*(nMsats+1) with the two chromosomes"""
+    c1c2: array 2*(nMsats+2) with the two chromosomes"""
     #optimisable
-    recombined = np.zeros(nMsats+1, dtype=int)
-    idx = np.random.randint(2, size = nMsats+1)
-    recombined = c1c2[idx, range(nMsats+1)]
+    recombined = np.zeros(nMsats+2, dtype=int)
+    idx = np.random.randint(2, size = nMsats+2)
+    recombined = c1c2[idx, range(nMsats+2)]
     return recombined
 
 # def recombi(Pmsats, c1, c2, nCo, nMsats): #pmsats -> microsat position

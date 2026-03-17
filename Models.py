@@ -1,7 +1,7 @@
 import numpy as np
 from BasicFunctions import *
 
-def gen_incr(N, N2, nMsats, Musat, Mucyt, nuc, cyt, tmp_nuc, tmp_cyt):
+def gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt):
     """make one life cycle stop after offspring birth"""
 
     for i in range(N):
@@ -28,12 +28,13 @@ def gen_incr(N, N2, nMsats, Musat, Mucyt, nuc, cyt, tmp_nuc, tmp_cyt):
         tmp_nuc[i*2+1,:] = gam1
         #cytotype
         tmp_cyt[i] = cyt[p1_id//2]
-    #mutate all the cytoplams
-    mutations_cyt(N, tmp_cyt, Mucyt)
+    tmp_nuc[:,1] = mutations_iloc(N2, tmp_nuc[:,1], Muiloc)
+    #mutate all the cytotypes
+    tmp_cyt = mutations_iloc(N, tmp_cyt, Muiloc)
     return
 
 
-def gen_incr_m2(N, N2, nMsats, Musat, Mucyt, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
+def gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
     """make one life cycle stop after offspring birth"""
 
     i=0
@@ -62,6 +63,7 @@ def gen_incr_m2(N, N2, nMsats, Musat, Mucyt, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
             #cytotype
             tmp_cyt[i] = cyt[p1_id//2]
             i+=1
+    tmp_nuc[:,1] = mutations_iloc(N2, tmp_nuc[:,1], Muiloc)
     #mutate all the cytoplams
-    mutations_cyt(N, tmp_cyt, Mucyt)
+    mutations_cyt(N, tmp_cyt, Muiloc)
     return
