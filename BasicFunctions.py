@@ -26,7 +26,7 @@ def recombi_ind(c1c2, nMsats):
 # def recombi(Pmsats, c1, c2, nCo, nMsats): #pmsats -> microsat position
 #     """return recombination of c1 with c2 whith nCo crossing over"""
 #     recombined = np.zeros(nMsats+1, dtype=int)
-#     recombined[1:] = c1[:]
+#     recombined[1:] = c1[:] # np.copy
 #     CoPos = np.sort(np.random.rand(nCo)) #crossing over positions
 #     j = 0
 #     for i in range(nCo):

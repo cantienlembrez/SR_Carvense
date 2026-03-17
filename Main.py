@@ -5,7 +5,16 @@ from datetime import datetime
 from BasicFunctions import *
 from Models import *
 
-
+def CorrThetaF(n, ThetaF):
+    # biais correction see (Xu and Fu 2004)
+    if ThetaF>15:
+        A = (1.1675 + 3.3232/n + 63.698/(n**2))
+        B = 0.2569
+    else:
+        A = (1.1313 + 3.4882/n + 28.2878/(n**2))
+        B = 0.3998
+    UnbiasedThetaF = ((np.sqrt(B**2 + 4*A*ThetaF) - B)/(2*A))**2
+    return UnbiasedThetaF
 
 def run(N, IDmsats, Musat, Muiloc, Gmax, Sm=0.5):
     """N: number of individuals,
@@ -45,8 +54,8 @@ def run(N, IDmsats, Musat, Muiloc, Gmax, Sm=0.5):
     f.write("Anc   "+"   ".join([str(r) for r in repeats])+"\n")
 
     for g in range(1, Gmax+1):
-        gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt)
-        #gen_incr_m2(N, N2, IDmsats, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm)
+        #gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt)
+        gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm)
         nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
 
     Nm = np.sum(nuc[1:N2:2, 0])
@@ -77,7 +86,8 @@ def run(N, IDmsats, Musat, Muiloc, Gmax, Sm=0.5):
     thetaF = np.mean(lthetaF)
     thetaV = np.mean(lthetaV)
     print("mean thetaF :", thetaF)
-    print("estimated pop size", thetaF/(4*Musat))
+    print("corrected thetaF :", CorrThetaF(N2,thetaF))
+    print("estimated pop size", CorrThetaF(N2, thetaF)/(4*Musat))
     print("mean thetaV :", thetaV)
     print("estimated pop size", thetaV/(4*Musat))
     print("sex ratio :" +str(Nm/(Nm+Nf)))
@@ -102,6 +112,6 @@ except:
     pass
 
 Musat = 1e-2
-N = 500
+N = 2000
 print("theta theo : " + str(4*N*Musat))
-run(N,[chr(i+65) for i in range(25)], Musat, Musat, 4000)
+run(N,[chr(i+65) for i in range(25)], Musat, Musat, 9000)
