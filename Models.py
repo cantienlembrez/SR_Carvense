@@ -1,5 +1,5 @@
 import numpy as np
-#from BasicFunctions import *
+from BasicFunctions import *
 
 ##### Init Functions ######
 
@@ -128,7 +128,6 @@ def gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
 
 def choiceFromTab(tab, tablen, cumul):
     rnum = np.random.uniform(low = 0, high = cumul)
-    print(rnum)
     Imin, Imax = 0, tablen
     interval = Imax - Imin
     while interval!=1:
@@ -138,7 +137,7 @@ def choiceFromTab(tab, tablen, cumul):
         else:
             Imax = Iint
         interval = Imax - Imin
-    return tab[0][Iint]
+    return tab[0][Imax]
 
 def gen_incr_CMS(N, N2, nMsats, Musat, Muiloc, HO, HP, MCMSP, s, d, nuc, cyt, Ovules, Pollen, tmp_nuc, tmp_cyt):
     """make one life cycle stop after offspring birth"""
