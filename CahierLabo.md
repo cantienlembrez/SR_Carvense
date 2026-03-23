@@ -66,5 +66,12 @@ avec de petites simulations tests on obtient les même fréquences à l'équilib
 **Remarque** : le maintien de la trioecie dans le modèle dépends d'un coefficient de dépression de consanguinité $d$ constant or c'est une propriété dynamique des populations qui dépends du fardeau génétique, qu'on chercherait à modeliser en plus des loci neutres dans un second temps. 
 Probleme : peut on maitenir la trioecie en  laissant evoluer dynamiquement la depréssion de consanguinité sans  $d$ fixe explicite.
  
+# Jeudi 19/03
+
+Pour l'instant on va s'interesser aux cas avec $d=0$ donc complétement neutre (par rapport au problème du jour précédent).
+Por l'instant on a négligé la clonalité dans le cycle de reproduction : c'est complexe à integrer sur une seule génération (necessiterai d'être spatialement explicite et d'avoir des informations comment marche précisément) une solution pour au moins l'integrer d'une génération à l'autre serais d'echantilloner des survivants  d'une génération sur l'autre repartent des racines.
+
+# Vendredi 20/03
+Exploration des paramètres du modèle  de Nguyen et Pannel (voir TrioecyFreqs.py)
 
 # Références
