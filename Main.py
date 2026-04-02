@@ -30,16 +30,24 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
 
     #intialization
     if Model=="M1" or Model=="M2":
-            nuc, cyt = init_m1m2(N, N2, nMsats)
-            tmp_cyt = np.zeros(N,dtype=int)
+        nuc, cyt = init_m1m2(N, N2, nMsats)
+        tmp_cyt = np.zeros(N,dtype=int)
+        Pollen, Ovules = None, None
+        parameters = []
+        func = sex_m1
+        if Model=="M2":
+            parameters = [Sm]
+            func = sex_m2
     elif Model=="M3":
         HO = 1/g
         HP = 1/a
         MCMSP = 1-em
         nuc, cyt, Pollen, Ovules = init_CMS(N, N2, nMsats, HO, HP, MCMSP)
         tmp_cyt = np.zeros((N, 2),dtype=int)
+        parameters = [HO, HP, MCMSP, s, d]
+        func = sex_CMS
     tmp_nuc = np.zeros((N2, nMsats+2),dtype=int)
-    print("Init")
+    print("Init", F_ID)
     fpath = "Simulations/"+Model+"_"+"N"+str(N)+"_"+str(F_ID)
     F_ID+=1
     mkdir(fpath)
@@ -53,45 +61,25 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
     f.close()
 
     #generation loop
-    if Model=="M1":
-        for i in range(1, Gmax+1):
-            gen_incr_m1(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt)
-            nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
-        for dy in range(Dyn[0]*Dyn[1]):
-            gen_incr_m1(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt)
-            nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
-            if dy%Dyn[0]==0:
-                np.save(fpath+"/nuc"+str(i+dy), nuc)
-                np.save(fpath+"/cyt"+str(i+dy), cyt)
-    elif Model=="M2":
-        for i in range(1, Gmax+1):
-            gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm)
-            nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
-        for dy in range(Dyn[0]*Dyn[1]):
-            gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm)
-            nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
-            if dy%Dyn[0]==0:
-                np.save(fpath+"/nuc"+str(i+dy), nuc)
-                np.save(fpath+"/cyt"+str(i+dy), cyt)
-    elif Model=="M3":
-        for i in range(1, Gmax+1):
-            Ovules, Pollen = gen_incr_CMS(N, N2, nMsats, Musat, Muiloc, HO, HP, MCMSP, s, d, nuc, cyt, Ovules, Pollen, tmp_nuc, tmp_cyt)
-            if len(Pollen[0])==1 or len(Ovules[0])==1:
-                print("A")
-                f = open(fpath+"/extinct"+str(i)+".txt", "w")
-                f.close()
-                return
-            nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
-        for dy in range(Dyn[0]*Dyn[1]):
-            Ovules, Pollen = gen_incr_CMS(N, N2, nMsats, Musat, Muiloc, HO, HP, MCMSP, s, d, nuc, cyt, Ovules, Pollen, tmp_nuc, tmp_cyt)
-            nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
-            if len(Pollen[0])==1 or len(Ovules[0])==1:
-                f = open(fpath++"/extinct"+str(i+dy)+".txt", "w")
-                f.close()
-                return
-            if dy%Dyn[0]==0:
-                np.save(fpath+"/nuc"+str(i+dy), nuc)
-                np.save(fpath+"/cyt"+str(i+dy), cyt)
+    print("RUN")
+    for i in range(1, Gmax+1):
+        Ovules, Pollen = func(parameters, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
+        nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
+        # test male extinction
+        if np.sum(nuc[1:N2:2,0])==0:
+            f = open(fpath+"/m_extinction"+str(i)+".txt", "a")
+            f.close()
+            return
+    for dy in range(Dyn[0]*Dyn[1]): #loop saving the system state after Gmax generations
+        Ovules, Pollen = func(parameters, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
+        nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
+        # test male extinction
+        if np.sum(nuc[1:N2:2,0])==0:
+            f = open(fpath+"/m_extinction"+str(i)+".txt", "a")
+            f.close()
+        if dy%Dyn[0]==0:
+            np.save(fpath+"/nuc"+str(i+dy), nuc)
+            np.save(fpath+"/cyt"+str(i+dy), cyt)
     return
 
 try:

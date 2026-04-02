@@ -70,8 +70,8 @@ def init_CMS(N, N2, nMsats, HO, HP, MCMSP):
 
 ######### Life cycle function ####################
 
-def gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt):
-    """make one life cycle stop after offspring birth"""
+def sex_m1(param, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen):
+    """sexual reproduction and mutations with no biais. param, Ovules and pollen only requiered for compatibility with other models"""
 
     for i in range(N):
         #mate choice
@@ -95,12 +95,13 @@ def gen_incr(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt):
     mutations_iloc(N2, Muiloc, tmp_nuc[:,1])
     #mutate all the cytotypes
     mutations_iloc(N, Muiloc, tmp_cyt)
-    return
+    return None, None # for compatibility with M3
 
 
-def gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
-    """make one life cycle stop after offspring birth"""
+def sex_m2(param, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen):
+    """sexual reproduction and mutations with differential mortality, Ovules and pollen only requiered for compatibility with cms. param = [Sm]"""
 
+    Sm = param[0]
     i=0
     while i<N:
         #mate choice
@@ -124,7 +125,7 @@ def gen_incr_m2(N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Sm):
     mutations_iloc(N2, Muiloc, tmp_nuc[:,1])
     #mutate all the cytotypes
     mutations_iloc(N, Muiloc, tmp_cyt)
-    return
+    return None, None # for compatibility with M3
 
 def choiceFromTab(tab, tablen, cumul):
     rnum = np.random.uniform(low = 0, high = cumul)
@@ -139,9 +140,10 @@ def choiceFromTab(tab, tablen, cumul):
         interval = Imax - Imin
     return tab[0][Imax]
 
-def gen_incr_CMS(N, N2, nMsats, Musat, Muiloc, HO, HP, MCMSP, s, d, nuc, cyt, Ovules, Pollen, tmp_nuc, tmp_cyt):
-    """make one life cycle stop after offspring birth"""
+def sex_CMS(param, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt,  Ovules, Pollen):
+    """Sexual reproduction and mutations for trioecy + CMS. param = [HO, HP, MCMSP, s, d]"""
 
+    HO, HP, MCMSP, s, d = param
     tmp_Ovules = [[-1],[0]]
     tmp_Pollen = [[-1],[0]]
     O_ID = 0
@@ -155,15 +157,15 @@ def gen_incr_CMS(N, N2, nMsats, Musat, Muiloc, HO, HP, MCMSP, s, d, nuc, cyt, Ov
     i=0
     while i<N:
         aborted = False
-        #Ovule choice
+        #Mother choice
         p1_id = choiceFromTab(Ovules, OvLen, OvCum)
         # hermphrodite has a chance of selfing
         if cyt[p1_id,0]==0 and np.random.rand()<=s:
             if np.random.rand()<=d:
-                aborted=True
+                aborted = True
             else:
                 p2_id = p1_id
-        else:
+        else: #father choice
             p2_id = choiceFromTab(Pollen, PoLen, PoCum)
 
         if not(aborted):
@@ -206,3 +208,5 @@ def gen_incr_CMS(N, N2, nMsats, Musat, Muiloc, HO, HP, MCMSP, s, d, nuc, cyt, Ov
     #mutate all the cytotypes
     mutations_iloc(N, Muiloc, tmp_cyt[:, 1])
     return tmp_Ovules, tmp_Pollen
+
+
