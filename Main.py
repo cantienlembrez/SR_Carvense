@@ -1,13 +1,13 @@
 import numpy as np
 from os import mkdir
+import sys
 
 from BasicFunctions import *
 from Models import *
-import sys
 
 F_ID = 0
 
-def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d=None, a=None, g=None):
+def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d=None, a=None, g=None, MaxAge = None, p = None, c = None):
     """
     Gmax: generation ending simulation
     Model: M1 Wright Fisher model, M2 male mortality, M3 Trioecy
@@ -22,11 +22,14 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
     d: prop of selfing ovule aborted due to inbreeding depretion
     a: ratio  1  male pollen / 1 hermaphrodite pollen
     g: ratio 1 female ovules / 1 hermaphrodite ovules
+    CP: True or false, True -> perennity/clonality simulated
     """
+
     global F_ID
 
     N2 = N*2
     nMsats = len(IDmsats)
+    mut_ID = [1, 1] # ID for infinite allele loci [ Nuc, Cyt ]
 
     #intialization
     if Model=="M1" or Model=="M2":
@@ -34,10 +37,10 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
         tmp_cyt = np.zeros(N,dtype=int)
         Pollen, Ovules = None, None
         parameters = []
-        func = sex_m1
+        sex_func = sex_m1
         if Model=="M2":
             parameters = [Sm]
-            func = sex_m2
+            sex_func = sex_m2
     elif Model=="M3":
         HO = 1/g
         HP = 1/a
@@ -45,7 +48,7 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
         nuc, cyt, Pollen, Ovules = init_CMS(N, N2, nMsats, HO, HP, MCMSP)
         tmp_cyt = np.zeros((N, 2),dtype=int)
         parameters = [HO, HP, MCMSP, s, d]
-        func = sex_CMS
+        sex_func = sex_CMS
     tmp_nuc = np.zeros((N2, nMsats+2),dtype=int)
     print("Init", F_ID)
     fpath = "Simulations/"+Model+"_"+"N"+str(N)+"_"+str(F_ID)
@@ -60,10 +63,22 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
     f.write("\nInitial microsatellites state:"+str(nMsats)+"\n" +str(IDmsats)+"\n" + str(nuc[0,2:]))
     f.close()
 
+    if CP:
+        Age = np.zeros(N, dtype=int)
+        cp_param = [MaxAge, p, c]
+        cp_func = ClonalityPerenity
+    else:
+        Age = None
+        cp_param = None
+        cp_func = No_CP
+
+
+
     #generation loop
     print("RUN")
     for i in range(1, Gmax+1):
-        Ovules, Pollen = func(parameters, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
+        Nsurv = cp_func(cp_param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age)
+        Ovules, Pollen = sex_func(parameters, N, N2, Nsurv, nMsats, Musat, Muiloc, mut_ID, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
         nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
         # test male extinction
         if np.sum(nuc[1:N2:2,0])==0:
@@ -71,7 +86,8 @@ def run(Model, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d
             f.close()
             return
     for dy in range(Dyn[0]*Dyn[1]): #loop saving the system state after Gmax generations
-        Ovules, Pollen = func(parameters, N, N2, nMsats, Musat, Muiloc, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
+        Nsurv = cp_func(cp_param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age)
+        Ovules, Pollen = sex_func(parameters, N, N2, Nsurv, nMsats, Musat, Muiloc, mut_ID, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
         nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
         # test male extinction
         if np.sum(nuc[1:N2:2,0])==0:
@@ -92,15 +108,16 @@ nMsats = 10
 
 
 MODEL = sys.argv[1]
-N = int(sys.argv[2])
-NbSave = int(sys.argv[3])
-Int = int(sys.argv[4])
-Nbreplicates = int(sys.argv[5])
-SEED = int(sys.argv[6])
+CP = int(sys.argv[2])
+N = int(sys.argv[3])
+NbSave = int(sys.argv[4])
+Int = int(sys.argv[5])
+Nbreplicates = int(sys.argv[6])
+SEED = int(sys.argv[7])
 
-Sm, em, s, d, a, g = None, None, None, None, None, None
+Sm, em, s, d, a, g, MaxAge, p, c = None, None, None, None, None, None, None, None, None
 
-for A in range(6, len(sys.argv)):
+for A in range(7, len(sys.argv)):
     Arg = sys.argv[A].split(":")
     if Arg[0]=="Sm": Sm = float(Arg[1])
     elif Arg[0]=="em": em = float(Arg[1])
@@ -108,8 +125,10 @@ for A in range(6, len(sys.argv)):
     elif Arg[0]=="d": d = float(Arg[1])
     elif Arg[0]=="a": a = float(Arg[1])
     elif Arg[0]=="g": g = float(Arg[1])
-
+    elif Arg[0]=="p": p = float(Arg[1])
+    elif Arg[0]=="c": c = float(Arg[1])
+    elif Arg[0]=="MaxAge": MaxAge = float(Arg[1])
 
 np.random.seed(SEED)
 for replicate in range(Nbreplicates):
-    run(MODEL, 6*N, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g)
+    run(MODEL, CP, 6*N, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g, MaxAge, p, c)

@@ -154,14 +154,14 @@ le modèle finalement retenu est le suivant : étant donné que la clonalité et
 - une proportion **des individus survivants (i.e. on suppose que si pas assez investi dans racines pas capable de repro vegetative)** $c$ produit un ramet avec ces racines qui se retrouve physiquement séparé du reste du clone modélise la clonalité en tant que telle 
 
 ### Simulations & programmes
-Pas précisé avant mais on simule loci 10 microsats 
+Pas précisé avant mais on simule 10 loci microsats 
 
-Jusqu'à présent j'utilisais une loi de Poisson $\mathcal{P}(Nlocus\times Ncopies\times \mu)$ (pour approx $\mathcal{B}$) pour tirer le nombre de mutations à la fin de chaque cycle (on peut les tirer tous à la fin étant donné que toutes les mutations sont neutres). Comme on a un taux de mutation élevé pour les loci microsatellites ($\mu = 10^{-3}$), la loi de poisson peut approximer plutôt mal la binomiale.
+Jusqu'à présent j'utilisais une loi de Poisson $\mathcal{P}(Nlocus\times Ncopies\times \mu)$ (pour approx $\mathcal{B}(Nlocus\times Ncopies, \mu)$) pour tirer le nombre de mutations à la fin de chaque cycle (on peut les tirer tous à la fin étant donné que toutes les mutations sont neutres). Comme on a un taux de mutation élevé pour les loci microsatellites ($\mu = 10^{-3}$), la loi de poisson peut approximer plutôt mal la binomiale.
 Maintenant je tire explicitement dans une loi binomiale même si c'est plus couteux (visuellement les resultats tests semblent pas très différents mais idéalement il faudrait refaire les simulations avec le nouveau code).
 
 
 premiers resultats sans analyses approfondies
-- beaucoup d'extinction de pops de taille 50 (c'est probablement causé par la façon d'initialisé la pop. Avec 4 * 1/4 pour tous les phénotypes sexuels) pas très important cf point 2
+- beaucoup d'extinctions de pops de taille 50 (c'est probablement causé par la façon d'initialisé la pop. Avec 4 * 1/4 pour tous les phénotypes sexuels) pas très important cf point 2
 - Toutes les populations avec $N=200$ et 20% des pops avec $N=1000$ ont fixé la CMS (c'est logique les paramètres pour avoirs des fréquences des différents phénotypes demandent d'être proches de la fixations pas peu d'hermaphrodites et de males sans CMS)
 - Pas de diff visuelles entre modele avec diff de mortalité et modèle nul avec meme taille efficace pour heterozygotie sous Hw, Nb allèles par locus, $N_e$ quelque soit la facon de l'estimer 
 
