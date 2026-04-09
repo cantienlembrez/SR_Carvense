@@ -7,7 +7,7 @@ from Models import *
 
 F_ID = 0
 
-def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d=None, a=None, g=None, MaxAge = None, p = None, c = None):
+def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=None, d=None, a=None, g=None, MaxAge = None, p = None, c = None, K = None):
     """
     Gmax: generation ending simulation
     Model: M1 Wright Fisher model, M2 male mortality, M3 Trioecy
@@ -63,10 +63,15 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
     f.write("\nInitial microsatellites state:"+str(nMsats)+"\n" +str(IDmsats)+"\n" + str(nuc[0,2:]))
     f.close()
 
-    if CP:
+    cp_func = ClonalityPerenity
+    if CP==1:
         Age = np.zeros(N, dtype=int)
         cp_param = [MaxAge, p, c]
-        cp_func = ClonalityPerenity
+        cl_func = ClonalityUB
+    elif CP==2:
+        Age = np.zeros(N, dtype=int)
+        cp_param = [MaxAge, p, c, c*K]
+        cl_func = ClonalityB
     else:
         Age = None
         cp_param = None
@@ -77,7 +82,7 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
     #generation loop
     print("RUN")
     for i in range(1, Gmax+1):
-        Nsurv = cp_func(cp_param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age)
+        Nsurv = cp_func(cp_param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age, cl_func)
         Ovules, Pollen = sex_func(parameters, N, N2, Nsurv, nMsats, Musat, Muiloc, mut_ID, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
         nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
         # test male extinction
@@ -86,7 +91,7 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
             f.close()
             return
     for dy in range(Dyn[0]*Dyn[1]): #loop saving the system state after Gmax generations
-        Nsurv = cp_func(cp_param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age)
+        Nsurv = cp_func(cp_param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age, cl_func)
         Ovules, Pollen = sex_func(parameters, N, N2, Nsurv, nMsats, Musat, Muiloc, mut_ID, nuc, cyt, tmp_nuc, tmp_cyt, Ovules, Pollen)
         nuc, cyt = np.copy(tmp_nuc), np.copy(tmp_cyt)
         # test male extinction
@@ -115,7 +120,8 @@ Int = int(sys.argv[5])
 Nbreplicates = int(sys.argv[6])
 SEED = int(sys.argv[7])
 
-Sm, em, s, d, a, g, MaxAge, p, c = None, None, None, None, None, None, None, None, None
+Sm, em, s, d, a, g, MaxAge, p, c, K = None, None, None, None, None, None, None, None, None, None
+N0 = 6*N
 
 for A in range(7, len(sys.argv)):
     Arg = sys.argv[A].split(":")
@@ -128,7 +134,9 @@ for A in range(7, len(sys.argv)):
     elif Arg[0]=="p": p = float(Arg[1])
     elif Arg[0]=="c": c = float(Arg[1])
     elif Arg[0]=="MaxAge": MaxAge = float(Arg[1])
+    elif Arg[0]=="K": K = float(Arg[1])
+    elif Arg[0]=="N0": N0 = int(Arg[1])
 
-np.random.seed(SEED)
+#np.random.seed(SEED)
 for replicate in range(Nbreplicates):
-    run(MODEL, CP, 6*N, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g, MaxAge, p, c)
+    run(MODEL, CP, N0, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g, MaxAge, p, c, K)
