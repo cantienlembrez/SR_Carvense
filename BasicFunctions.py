@@ -83,7 +83,7 @@ return the index after the last individual added"""
     Ncopy = Clfunc(Nsurv, Nsurv2, param, tmp_nuc, tmp_cyt)
     return Nsurv+Ncopy
 
-def No_CP(param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age):
+def No_CP(param, N, nuc, cyt, tmp_nuc, tmp_cyt, Age, Clfunc):
     return 0
 
 # def recombi(Pmsats, c1, c2, nCo, nMsats): #pmsats -> microsat position

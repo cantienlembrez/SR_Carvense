@@ -76,6 +76,7 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
         Age = None
         cp_param = None
         cp_func = No_CP
+        cl_func = None
 
 
 
@@ -121,7 +122,7 @@ Nbreplicates = int(sys.argv[6])
 SEED = int(sys.argv[7])
 
 Sm, em, s, d, a, g, MaxAge, p, c, K = None, None, None, None, None, None, None, None, None, None
-N0 = 6*N
+Gmax = 6*N
 
 for A in range(7, len(sys.argv)):
     Arg = sys.argv[A].split(":")
@@ -135,8 +136,8 @@ for A in range(7, len(sys.argv)):
     elif Arg[0]=="c": c = float(Arg[1])
     elif Arg[0]=="MaxAge": MaxAge = float(Arg[1])
     elif Arg[0]=="K": K = float(Arg[1])
-    elif Arg[0]=="N0": N0 = int(Arg[1])
+    elif Arg[0]=="Gmax": Gmax = int(Arg[1])
 
 #np.random.seed(SEED)
 for replicate in range(Nbreplicates):
-    run(MODEL, CP, N0, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g, MaxAge, p, c, K)
+    run(MODEL, CP, Gmax, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g, MaxAge, p, c, K)
