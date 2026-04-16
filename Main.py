@@ -61,24 +61,25 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
     if Model=="M3":
         f.write("\ng:"+str(g)+"\na:"+str(a)+"\ns:"+str(s)+"\nd:"+str(d)+"\nem:"+str(em))
     f.write("\nInitial microsatellites state:"+str(nMsats)+"\n" +str(IDmsats)+"\n" + str(nuc[0,2:]))
-    f.close()
 
     cp_func = ClonalityPerenity
     if CP==1:
+        f.write("\nCP \np:"+str(p)+"\nc:"+str(c))
         Age = np.zeros(N, dtype=int)
         cp_param = [MaxAge, p, c]
         cl_func = ClonalityUB
     elif CP==2:
+        f.write("\nCPB \np:"+str(p)+"\nc:"+str(c)+"\nK:"+str(K))
         Age = np.zeros(N, dtype=int)
         cp_param = [MaxAge, p, c, c*K]
         cl_func = ClonalityB
     else:
+        f.write("\nNo CP")
         Age = None
         cp_param = None
         cp_func = No_CP
         cl_func = None
-
-
+    f.close()
 
     #generation loop
     print("RUN")
@@ -102,6 +103,8 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
         if dy%Dyn[0]==0:
             np.save(fpath+"/nuc"+str(i+dy), nuc)
             np.save(fpath+"/cyt"+str(i+dy), cyt)
+            if CP>0:
+                np.save(fpath+"/Age"+str(i+dy), Age)
     return
 
 try:
@@ -111,7 +114,6 @@ except:
 
 Mu = 1e-3
 nMsats = 10
-
 
 MODEL = sys.argv[1]
 CP = int(sys.argv[2])
@@ -138,6 +140,6 @@ for A in range(7, len(sys.argv)):
     elif Arg[0]=="K": K = float(Arg[1])
     elif Arg[0]=="Gmax": Gmax = int(Arg[1])
 
-#np.random.seed(SEED)
+np.random.seed(SEED)
 for replicate in range(Nbreplicates):
     run(MODEL, CP, Gmax, (Int, NbSave), N,[chr(i+65) for i in range(nMsats)], Mu, Mu, Sm, em, s, d, a, g, MaxAge, p, c, K)

@@ -38,15 +38,15 @@ def ClonalityUB(Nsurv, Nsurv2, param, tmp_nuc, tmp_cyt):
 
 def ClonalityB(Nsurv, Nsurv2, param, tmp_nuc, tmp_cyt):
     c, cm = param[2:]
-    males = np.bool(tmp_nuc[1:Nsurv2:2, 0])
-    females = np.bool(1-males)
+    males = np.bool_(tmp_nuc[1:Nsurv2:2, 0])
+    females = np.bool_(1-males)
 
     Nsurvm = np.sum(males)
     Nsurvf = Nsurv-Nsurvm
     Ncopym = np.random.binomial(Nsurvm, cm)
     Ncopyf = np.random.binomial(Nsurvf, c)
 
-    IdxGenets = np.concat((np.random.choice(np.arange(Nsurv)[males], Ncopym, replace = False),
+    IdxGenets = np.concatenate((np.random.choice(np.arange(Nsurv)[males], Ncopym, replace = False),
                            (np.random.choice(np.arange(Nsurv)[females], Ncopyf, replace = False))))
     Ncopy = Ncopym+Ncopyf
     Ncopy2 = Ncopy*2
