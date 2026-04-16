@@ -188,14 +188,16 @@ Avec seed cf tableau (Lundi 23/03- Mecredi 1/04) :
 
 ## Expression Analytique de Ne dans le cas avec trioecie
 
-Idée d'approche pour trouver une expression Analytique de $N_e$ partir de (Charlesworth et Charlesworth 2010) chapitre 5.2 
+Idée d'approche pour trouver une expression analytique de $N_e$ partir de (Charlesworth et Charlesworth 2010) chapitre 5.2 
 
 ### Compréhension du Charlesworth et Charlesworth
 
 Ils proposent la formule générale pour $P_c$ la probabilité que deux
 allèles pris aléatoirement chez deux individus différents coalescent
 d'une génération sur l'autre :
+
 $$P_c = \sum_{rsu}\alpha_r\alpha_s\beta_ {rsu}\Theta_{rsu}\gamma_{rsu}$$
+
 avec :
 
 -   $\alpha_r$ et $\alpha_s$, *the probabilities that they come from
@@ -222,9 +224,11 @@ choisi soit dans la classe $r$
 
 les $\beta$ pour autosome valent tous $\frac14$ par ce que c'est (je
 note $P(r \leftarrow u)$ la proba que un allèle chez un $r$ vienne d'un
-parent $u$)
-:$$\beta_ {rsu}  =  P(r \leftarrow u) \times P(s \leftarrow u)$$ or
-quand chaque sexe a la même contribution à la descendance donc
+parent $u$) :
+
+$$\beta_ {rsu}  =  P(r \leftarrow u) \times P(s \leftarrow u)$$ 
+
+or quand chaque sexe a la même contribution à la descendance donc
 $P(r \leftarrow f) = P(r \leftarrow m) = \frac12$. (Est ce que c'est
 vrai parce que tout les individus ont forcément un père et une mère ? Si
 on transpose au modèle Nguyen et Pannell je ne suis pas sur que cette
@@ -255,33 +259,36 @@ qu'ils viennent chacun d'une femelle. Notons $d_{fk}$ le nombre de fille
 $\bar d_{f} = \frac{1}{N_f}\sum_{k=0}^{N_f}d_{fk}$ le nombre moyen de
 filles par mère. La proba qu'**une** fille soit la fille de la k-eme
 mère est de
+
 $$\frac{d_{fk}}{\sum_{k=0}^{N_f}d_{fk}} = \frac{d_{fk}}{N_f\bar d_{f}}$$
+
 donc la proba que **deux filles viennent de la même mère** est de (si la
 pop est suffisamment grande pour négliger les -1 au dénominateur) :
 $$\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2}$$ Et la proba que **toutes
 les deux viennent de la même mère n'importe laquelle** s'obtient en
 sommant sur k :
-$$\Theta_{fff} = \sum_{k=0}^{N_f}\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2} 
-    \label{thetabrut}$$
 
-Le développement suivant permet de simplifier l'expression
-([\[thetabrut\]](#thetabrut){reference-type="ref"
-reference="thetabrut"}) en utilisant des information sur la distribution
-à la place du nombre de descendant de chaque femelle. On veut tomber sur
-:
-$$\Theta_{fff} = \frac{\Delta V_{ff}/\bar d_f^2 + 1}{N_f} = \frac{1}{(N_f\bar{d}_f)^2}\left(N_f(\Delta V_{ff} + \bar{d}_f^2)\right)
-    \label{objectif}$$ Si tous les individus produisent le même nombre
+$$\Theta_{fff} = \sum_{k=0}^{N_f}\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2} $$
+
+Le développement suivant permet de simplifier cette expression en utilisant des information sur la distribution
+à la place du nombre de descendant de chaque femelle. On veut tomber sur :
+
+$$\Theta_{fff} = \frac{\Delta V_{ff}/\bar d_f^2 + 1}{N_f} = \frac{1}{(N_f\bar{d}_f)^2}\left(N_f(\Delta V_{ff} + \bar{d}_f^2)\right)$$ 
+(e2)
+    
+Si tous les individus produisent le même nombre
 de descendants, alors la distribution du nombre de descendants pour un
 individu suit une loi de poisson de paramètre $\bar d_{f}$ (pour le
 développement je vais noter autrement que dans le livre, je note $FF$ la
 distribution du nb de filles produite par une mère). Si cette hypothèse
 n'est respectée on peut calculer la déviation à la loi de poisson :
+
 $$\Delta V_{ff} = Var(FF) - E(FF) = E(FF^2) - E(FF)^2 - E(FF)= \sum \frac {d_{fk}^2}{N_f} - \bar d_f^2 - \bar d_f
     \label{delta}$$
 
-en injectant [\[delta\]](#delta){reference-type="ref" reference="delta"}
-dans [\[objectif\]](#objectif){reference-type="ref"
-reference="objectif"} : $$\begin{aligned}
+en injectant $\Delta V_{ff}$ dans l'expression (e2) : 
+
+$$\begin{aligned}
         & \frac{1}{(N_f\bar{d}_f)^2}\left[N_f\left( \sum \frac {d_{fk}^2}{N_f} - \bar d_f^2 - \bar d_f + \bar{d}_f^2\right)\right]\\
         & \frac{1}{(N_f\bar{d}_f)^2}\left( \sum  d_{fk}^2- \bar d_fN_f \right) =  \frac{1}{(N_f\bar{d}_f)^2}\left( \sum  d_{fk}^2- N_f\frac{\sum d_{fk}}{N_f} \right) \\
         & \sum_{k=0}^{N_f}\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2}  = \Theta_{fff} 
@@ -333,8 +340,7 @@ pollen et 1/2 ovules.
 On trouve facilement que $P(M \leftarrow F) = 0$, et que
 $P(M \leftarrow H) = 1\times \frac12$. Pour $M$ et $C$ la contribution
 devrait dépendre des fréquences relatives de pollen. Pollen total
-produit par $M$ : $\alpha N_M$ (c'est le $\alpha$ du modèle de trioecie
-pas celui de l'équation (1)) et pollen total produit par $C$ :
+produit par $M$ : $\alpha N_M$ (c'est le $\alpha$ du modèle de trioecie) et pollen total produit par $C$ :
 $(1-em)\alpha N_C$.
 $P(M \leftarrow M) = \frac{\alpha N_M}{\alpha N_M + (1-em)\alpha N_C }\times \frac12 = \frac{N_M}{2(N_M + (1-em )N_C)}$
 et $P(M \leftarrow C) = \frac{(1-em )N_C}{2(N_M + (1-em )N_C)}$.
