@@ -165,4 +165,218 @@ premiers resultats sans analyses approfondies
 - Toutes les populations avec $N=200$ et 20% des pops avec $N=1000$ ont fixé la CMS (c'est logique les paramètres pour avoirs des fréquences des différents phénotypes demandent d'être proches de la fixations pas peu d'hermaphrodites et de males sans CMS)
 - Pas de diff visuelles entre modele avec diff de mortalité et modèle nul avec meme taille efficace pour heterozygotie sous Hw, Nb allèles par locus, $N_e$ quelque soit la facon de l'estimer 
 
+# Point 17/04
+
+## Modele clonalité (definitif ?)
+
+J'avais pas précisé mais on néglige les mutations somatiques (pour les microsats c'est discutable : la majorité des mutations -> slippage de replication (Ellegren 2004) qui pour le coups ce produisent dans lignées somatiques
+Mais également une partie est causée par erreurs de recombinaison. Donc on aurait pu faire le choix de prendre un $\mu_{clonal}$ plus faible que $\mu$)
+
+**modification :** le modèle avec biais diffère du modèle sans biais au niveau la probabilité de clonage ($c_f = c$ et $c_m = cK$), au lieu d'une différence de survie (plus raccord avec la litterature)
+
+## Simulations lancées 
+j'ai accidentellement kill le job avec la seed 10 (cf tab précédent) relancé sur nouvelle version code 
+nouvelles simulatiosn lancées avec code commit a2fcdd3 : 
+- Sans seed (à cause d'une fausse manip)
+	- Clonalité non biaisé $p=0.1$ $c=1$ AgeMax = 2 N = 1000 (j'ai également pour p=0.1 et c=0.1 par erreur)
+		- Modele repro sexué sans biais
+		- Modèle cms (g=1.3, a=4.3, s=0.5, d=0, em=0.9)
+	- Clonalité biasé : $p=0.1$ $c=1$ AgeMax = 2 K = 0 N = 1000
+		
+Avec seed cf tableau (Lundi 23/03- Mecredi 1/04) :
+	- Seeds : 10 à 15 (et 19 avec commit précédent f16a881)
+
+## Expression Analytique de Ne dans le cas avec trioecie
+
+Idée d'approche pour trouver une expression Analytique de $N_e$ partir de (Charlesworth et Charlesworth 2010) chapitre 5.2 
+
+### Compréhension du Charlesworth et Charlesworth
+
+Ils proposent la formule générale pour $P_c$ la probabilité que deux
+allèles pris aléatoirement chez deux individus différents coalescent
+d'une génération sur l'autre :
+$$P_c = \sum_{rsu}\alpha_r\alpha_s\beta_ {rsu}\Theta_{rsu}\gamma_{rsu}$$
+avec :
+
+-   $\alpha_r$ et $\alpha_s$, *the probabilities that they come from
+    indivuals of classes(compartements) r and s, respectively*
+
+-   $\beta_ {rsu}$, *the probability that the pair of alleles with
+    origins $r$ and $s$ both come from a parent of sex $u$*
+
+-   $\Theta_{rsu}$ *the probability that both alleles come from the same
+    individual, given that an $rs$ pair of alleles was derived from a
+    parent of sex $u$*
+
+-   $\gamma_{rsu}$ *the probability that the alleles coalesce whthin
+    that individual*
+
+**remarque** : les probabilités $\beta_ {rsu}$, $\Theta_{rsu}$ et
+$\gamma_{rsu}$ sont des probas conditionnelles qui supposent que tous
+les évènements précédents se soient réalisés
+
+Si j'ai bien compris $\alpha_r$ sont \"du point de vue\" de l'allèle
+*i.e.* pour un allèle autosomal, $\alpha_f = \alpha_m = \frac12$ sans
+dépendre des effectifs. Comprendre $\alpha_r$ : probabilité que l'allèle
+choisi soit dans la classe $r$
+
+les $\beta$ pour autosome valent tous $\frac14$ par ce que c'est (je
+note $P(r \leftarrow u)$ la proba que un allèle chez un $r$ vienne d'un
+parent $u$)
+:$$\beta_ {rsu}  =  P(r \leftarrow u) \times P(s \leftarrow u)$$ or
+quand chaque sexe a la même contribution à la descendance donc
+$P(r \leftarrow f) = P(r \leftarrow m) = \frac12$. (Est ce que c'est
+vrai parce que tout les individus ont forcément un père et une mère ? Si
+on transpose au modèle Nguyen et Pannell je ne suis pas sur que cette
+hypothèse soit respectée : faut il intégrer les coefficients $g$,
+$\alpha$ et $s$ de leur modèle à cet endroit ?) . Pour comprendre le
+principe, on peut faire pour les allèles liées au X (pour un mâle X
+vient forcément de la mère) :
+
+-   $\beta_{mmf}=  P(m \leftarrow f) \times P(m \leftarrow f)  =  1\times 1 = 1$
+
+-   $\beta_{fmf} =  P(f \leftarrow f) \times P(m \leftarrow f)  = \frac 12\times 1 = \frac12$
+
+-   $\beta_{fmm} =  P(f \leftarrow m) \times P(m \leftarrow m)  = \frac 12\times 0=0$
+
+-   $\beta_{mmf} =  P(m \leftarrow f) \times P(m \leftarrow f)  = \frac 12\times\frac 12=\frac 14$
+
+-   etc.
+
+Pour $\gamma_{rsu}$, la proba de coalescence dans un individu c'est
+simplement $\frac12 + \frac{F_{is}}{2}$ premier terme identité de
+provenance et second : identité de copie.
+
+Pour les coefficients $\Theta_{rsu}$, je vais refaire son développement
+de $\Theta_{fff}$ en détaillant plus. On cherche la proba que deux
+allèles chez deux filles différentes viennent de la même mère sachant
+qu'ils viennent chacun d'une femelle. Notons $d_{fk}$ le nombre de fille
+($d$ pour daugther) produit par la k-eme femelle. soit
+$\bar d_{f} = \frac{1}{N_f}\sum_{k=0}^{N_f}d_{fk}$ le nombre moyen de
+filles par mère. La proba qu'**une** fille soit la fille de la k-eme
+mère est de
+$$\frac{d_{fk}}{\sum_{k=0}^{N_f}d_{fk}} = \frac{d_{fk}}{N_f\bar d_{f}}$$
+donc la proba que **deux filles viennent de la même mère** est de (si la
+pop est suffisamment grande pour négliger les -1 au dénominateur) :
+$$\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2}$$ Et la proba que **toutes
+les deux viennent de la même mère n'importe laquelle** s'obtient en
+sommant sur k :
+$$\Theta_{fff} = \sum_{k=0}^{N_f}\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2} 
+    \label{thetabrut}$$
+
+Le développement suivant permet de simplifier l'expression
+([\[thetabrut\]](#thetabrut){reference-type="ref"
+reference="thetabrut"}) en utilisant des information sur la distribution
+à la place du nombre de descendant de chaque femelle. On veut tomber sur
+:
+$$\Theta_{fff} = \frac{\Delta V_{ff}/\bar d_f^2 + 1}{N_f} = \frac{1}{(N_f\bar{d}_f)^2}\left(N_f(\Delta V_{ff} + \bar{d}_f^2)\right)
+    \label{objectif}$$ Si tous les individus produisent le même nombre
+de descendants, alors la distribution du nombre de descendants pour un
+individu suit une loi de poisson de paramètre $\bar d_{f}$ (pour le
+développement je vais noter autrement que dans le livre, je note $FF$ la
+distribution du nb de filles produite par une mère). Si cette hypothèse
+n'est respectée on peut calculer la déviation à la loi de poisson :
+$$\Delta V_{ff} = Var(FF) - E(FF) = E(FF^2) - E(FF)^2 - E(FF)= \sum \frac {d_{fk}^2}{N_f} - \bar d_f^2 - \bar d_f
+    \label{delta}$$
+
+en injectant [\[delta\]](#delta){reference-type="ref" reference="delta"}
+dans [\[objectif\]](#objectif){reference-type="ref"
+reference="objectif"} : $$\begin{aligned}
+        & \frac{1}{(N_f\bar{d}_f)^2}\left[N_f\left( \sum \frac {d_{fk}^2}{N_f} - \bar d_f^2 - \bar d_f + \bar{d}_f^2\right)\right]\\
+        & \frac{1}{(N_f\bar{d}_f)^2}\left( \sum  d_{fk}^2- \bar d_fN_f \right) =  \frac{1}{(N_f\bar{d}_f)^2}\left( \sum  d_{fk}^2- N_f\frac{\sum d_{fk}}{N_f} \right) \\
+        & \sum_{k=0}^{N_f}\frac{d_{fk}(d_{fk} -1)}{(N_f\bar d_{f})^2}  = \Theta_{fff} 
+\end{aligned}$$
+
+ensuite ils proposent une simplification supplémentaire pour n'avoir
+plus que $\Delta V_F$ la déviation de la distribution des descendant
+produits quelque soit le sexe par une femelle à loi de poisson.
+
+Dans leur tableau des $\Theta$ livre, pour les $\Theta_{rsu}$ avec
+$r\neq s$ ils font intervenir $C_{rmf}$ la covariance entre le nombre de
+fils et filles produit par le sexe $r$ à la place de $\Delta V_{rf}$ ça
+doit venir du même type d'argument. Logiquement on devrait avoir :
+$$C_{fmf}= \sum_{k=0}^{N_f}\frac{(\bar d_f - d_{fk})(\bar s_f  - s_{fk})}{N_f}$$
+($s_{fk}$ est le nb de fils produit par la k-eme femelle.)
+
+### Application à Nguyen et Pannell
+
+#### Choix approche
+
+Je pense que le meilleur choix est de partir avec 4 classes : mâles
+($M$) mâles avec cms ($C$) hermaphrodites ($H$) et femelles ($F$). Dans
+le modèle, les effectifs de chaque sexe sont stables, il n'y a pas de
+raison pour que ils ait de déviation à la loi de poisson (on a
+$\Delta V_{xx} = 0$). Je vois pas non plus de raison pour que les
+covariance soient non nulles (sauf peut-être : à cause de
+l'autofécondation $C_{HHM}\neq0$ mais normalement non les tirages de
+chaque descendant sont indépendants).
+
+On devrait donc avoir $\Theta_{rsu} = \frac{1}{N_u}$ et la complexité
+c'est dériver les $\beta_{rsu}$. Il faut trouver les contribution des
+parents aux classes des enfants.
+
+Avec 3 classes je pense que les $\beta$ sont pas beaucoup plus simple à
+trouver et il faut en plus trouver les déviations aux lois de poisson
+pour les mâles avec ou sans cms.
+
+#### Calculs des coefficients $\beta$
+
+revient à calculer 16 $P(r \leftarrow u)$ (rappel la proba que un allèle
+chez un $r$ vienne d'un parent $u$ )
+
+##### Cas simple : contribution à M {#cas-simple-contribution-à-m .unnumbered}
+
+Les croisement qui donnent M (XYc) sont XXc x XYc et XXc x XYn. La
+contribution génétique des parents (pour allele autosomal) c'est 1/2
+pollen et 1/2 ovules.
+
+On trouve facilement que $P(M \leftarrow F) = 0$, et que
+$P(M \leftarrow H) = 1\times \frac12$. Pour $M$ et $C$ la contribution
+devrait dépendre des fréquences relatives de pollen. Pollen total
+produit par $M$ : $\alpha N_M$ (c'est le $\alpha$ du modèle de trioecie
+pas celui de l'équation (1)) et pollen total produit par $C$ :
+$(1-em)\alpha N_C$.
+$P(M \leftarrow M) = \frac{\alpha N_M}{\alpha N_M + (1-em)\alpha N_C }\times \frac12 = \frac{N_M}{2(N_M + (1-em )N_C)}$
+et $P(M \leftarrow C) = \frac{(1-em )N_C}{2(N_M + (1-em )N_C)}$.
+
+Les autres $P(r \leftarrow u)$ devraient être trouvables de la même
+manière (les hermaphrodites vont complexifier l'affaire pour certaines
+classes).
+
+#### Autres coefficients
+
+les coefficient $\alpha_i$ probabilité que l'allèle choisit soit dans la
+classe $i$ devraient tous valoir 1/4. Pour $\gamma_{rsu}$, il faudrait
+trouver l'expression du $F_{IS}$ à l'équilibre (ça doit se trouver en
+considérant le taux d'autofécondation effectif
+$\frac {N_H}{N}\times s(1-d)$).
+
+
+# Point Analyse Simulations
+
+Cette section a été modifié plusiseurs fois pour tracer les changement suivre les commits git.
+
+### Comparaison modèle mortalité et modèle null (scriptCompSm.py)
+
+tableau : en premier la moyenne pour le modèle focal en 2eme celle du modèle null $N_e$ equivalente, puis resultats test de wilcoxon pour la comparaison des deux groupes.
+
+Pour le premier tableau sur les allèles
+colone :
+- Ne (F) : Ne estimé avec $\hat\theta_F$
+- Ne (Vs) : Ne estimé avec $\hat\theta_{V_s}$
+- He (iam) : heterozigotie attendue sous panmixie pour loci infinite allele model 
+- Ne : estimation Ne à partir colonne precédente 
+- Fis global pour les loci microsat $L=10$ (moins les locis non polymorphes) $$\frac1L\times\frac{\sum H_o}{\sum H_e}$$
+
+##### Avec Sm = 0.5
+| M surv b | M1 eq    | Ne (F)                                | Ne (Vs)                               | He (iam)                           | Ne (iam)         | Fis                                        | N all                              |
+|----------|----------|---------------------------------------|---------------------------------------|------------------------------------|------------------|--------------------------------------------|------------------------------------|
+| $N=50$   | $N=44$   | 44.29, 44.93 (w = 2463, p = 0.83)     | 41.66, 40.84 (w = 2458, p = 0.81)     | 0.142, 0.158 (w  = 1730, p = 0.55) | 41.53, 46.08     | -1.5e-3, -3.6e-3 (w = 1895, p = **0.030**) | 1.74, 1.68 (w = 1587, p = 0.064)   |
+| $N=200$  | $N=178$  | 174.35, 185.53 (w = 2139, p = 0.18)   | 159.94, 162.25 (w = 2330, p = 0.50)   | 0.402, 0.400 (W = 2403, p = 0.67)  | 167.93, 166.60   | -6.3e-3, -6.0e-3 (w = 2516, p = 0.98)      | 3.14, 3.09 (w = 1530.5, p = 0.19)  |
+| $N=1000$ | $N=889$  | 916.18, 891.87 (w = 2161, p = 0.21)   | 895.14, 845.31 (w = 2205, p = 0.27)   | 0.786, 0.789 (w = 2505, p = 0.95)  | 918.35, 934.65   | -1.1e-4, -4.9e-5 (w = 2261, p = 0.66)      | 6.08, 6.05 (w = 2162.5, p = 0.66)  |
+| $N=5000$ | $N=4444$ | 4359.67, 4389.08 (w = 2439, p = 0.77) | 4000.02, 4023.73 (w = 2455, p = 0.81) | 0.948, 0.945 (w = 2171, p = 0.22)  | 4586.67, 4329.27 | -1.6e-5, -2.3e-5 (w = 2419, p = 0.71)      | 12.22, 12.22 (w = 2225.5, p =0.71) |
+
+
+
+
 # Références
