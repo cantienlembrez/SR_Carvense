@@ -35,7 +35,7 @@ def run(Model, CP, Gmax, Dyn, N, IDmsats, Musat, Muiloc, Sm=None, em=None, s=Non
     if Model=="M1" or Model=="M2":
         nuc, cyt = init_m1m2(N, N2, nMsats)
         tmp_cyt = np.zeros(N,dtype=int)
-        Pollen, Ovules = None, None
+        Pollen, Ovules = np.copy(nuc[1::2, 0]), 1 - np.copy(nuc[1::2, 0])
         parameters = []
         sex_func = sex_m1
         if Model=="M2":
