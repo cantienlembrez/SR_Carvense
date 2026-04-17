@@ -358,6 +358,11 @@ considérant le taux d'autofécondation effectif
 $\frac {N_H}{N}\times s(1-d)$).
 
 
+# Vendredi 17/04
+
+## Simus lancées 
+- Seed 20 avec N=132 sur le tableau (correspond à équivalent modèle null de la seed 18, Ne estimé avec theta F) commit a2fcdd3
+
 # Point Analyse Simulations
 
 Cette section a été modifié plusiseurs fois pour tracer les changement suivre les commits git.
@@ -370,19 +375,22 @@ Pour le premier tableau sur les allèles
 colone :
 - Ne (F) : Ne estimé avec $\hat\theta_F$
 - Ne (Vs) : Ne estimé avec $\hat\theta_{V_s}$
-- He (iam) : heterozigotie attendue sous panmixie pour loci infinite allele model 
+- He (iam) : heterozigotie attendue sous panmixie pour loci infinite allele model (locus nucléaire)
 - Ne : estimation Ne à partir colonne precédente 
 - Fis global pour les loci microsat $L=10$ (moins les locis non polymorphes) $$\frac1L\times\frac{\sum H_o}{\sum H_e}$$
 
-##### Avec Sm = 0.5
-| M surv b | M1 eq    | Ne (F)                                | Ne (Vs)                               | He (iam)                           | Ne (iam)         | Fis                                        | N all                              |
-|----------|----------|---------------------------------------|---------------------------------------|------------------------------------|------------------|--------------------------------------------|------------------------------------|
-| $N=50$   | $N=44$   | 44.29, 44.93 (w = 2463, p = 0.83)     | 41.66, 40.84 (w = 2458, p = 0.81)     | 0.142, 0.158 (w  = 1730, p = 0.55) | 41.53, 46.08     | -1.5e-3, -3.6e-3 (w = 1895, p = **0.030**) | 1.74, 1.68 (w = 1587, p = 0.064)   |
-| $N=200$  | $N=178$  | 174.35, 185.53 (w = 2139, p = 0.18)   | 159.94, 162.25 (w = 2330, p = 0.50)   | 0.402, 0.400 (W = 2403, p = 0.67)  | 167.93, 166.60   | -6.3e-3, -6.0e-3 (w = 2516, p = 0.98)      | 3.14, 3.09 (w = 1530.5, p = 0.19)  |
-| $N=1000$ | $N=889$  | 916.18, 891.87 (w = 2161, p = 0.21)   | 895.14, 845.31 (w = 2205, p = 0.27)   | 0.786, 0.789 (w = 2505, p = 0.95)  | 918.35, 934.65   | -1.1e-4, -4.9e-5 (w = 2261, p = 0.66)      | 6.08, 6.05 (w = 2162.5, p = 0.66)  |
-| $N=5000$ | $N=4444$ | 4359.67, 4389.08 (w = 2439, p = 0.77) | 4000.02, 4023.73 (w = 2455, p = 0.81) | 0.948, 0.945 (w = 2171, p = 0.22)  | 4586.67, 4329.27 | -1.6e-5, -2.3e-5 (w = 2419, p = 0.71)      | 12.22, 12.22 (w = 2225.5, p =0.71) |
+##### Avec Sm=0.5
+| M surv b | Mnull eq | Ne (F)                                | Ne (Vs)                               | He (iam)                           | Ne (iam)         | Fis                                        | N all                                |
+|----------|----------|---------------------------------------|---------------------------------------|------------------------------------|------------------|--------------------------------------------|--------------------------------------|
+| $N=50$   | $N=44$   | 44.29, 44.93 (w = 5154, p = 0.71)     | 41.66, 40.84 (w = 5242, p = 0.56)     | 0.142, 0.158 (w  = 4807, p = 0.63) | 41.53, 46.08     | -1.5e-3, -3.6e-3 (w = 5925, p = **0.024**) | 1.74, 1.68 (w = 5885, p = **0.029**) |
+| $N=200$  | $N=178$  | 174.35, 185.53 (w = 4430, p = 0.16)   | 159.94, 162.25 (w = 4642, p = 0.38)   | 0.402, 0.400 (W = 5055, p = 0.89)  | 167.93, 166.60   | -6.3e-3, -6.0e-3 (w = 5036, p = 0.93)      | 3.14, 3.09 (w = 5452.5, p = 0.27)    |
+| $N=1000$ | $N=889$  | 916.18, 891.87 (w = 5294, p = 0.47)   | 895.14, 845.31 (w = 5446, p = 0.28)   | 0.786, 0.789 (w = 4907, p = 0.35)  | 918.35, 934.65   | -1.1e-4, -4.9e-5 (w = 4616, p = 0.35)      | 6.08, 6.05 (w = 5317.5, p = 0.44)    |
+| $N=5000$ | $N=4444$ | 4359.67, 4389.08 (w = 4984, p = 0.97) | 4000.02, 4023.73 (w = 5155, p = 0.71) | 0.948, 0.945 (w = 5568, p = 0.17)  | 4586.67, 4329.27 | -1.6e-5, -2.3e-5 (w = 5198, p = 0.63)      | 12.22, 12.22 (w = 5119, p = 0.77)    |
+remarques :
+- pour le Fis la variance à l'air plus elevée pour le modèle surv biaisé que pour le modèle null dans certains cas 50 et 5000.
 
+### Comparaison modèle trioecie et modèle null (scriptCompTrio.py)
 
-
+##### Avec g=1.3, a=4.3, s=0.5, d=0, em=0.9
 
 # Références
