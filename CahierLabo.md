@@ -358,26 +358,39 @@ considérant le taux d'autofécondation effectif
 $\frac {N_H}{N}\times s(1-d)$).
 
 
-# Vendredi 17/04
+# Lundi 20/04
 
-## Simus lancées 
-- Seed 20 avec N=132 sur le tableau (correspond à équivalent modèle null de la seed 18, Ne estimé avec theta F) commit a2fcdd3
+## Simulations 
+lancées avec commit a2fcdd3 : 
+- Seed 20 avec N=132 sur le tableau (correspond à équivalent modèle null de la seed 18, Ne estimé avec theta F) 
+- Seed 28 : M null N = 82 (equivalent Ne de la seed 26 estimé avec theta F)
+- Seed 29 : M null N = 409 (equivalent Ne de la seed 27 estimé avec theta F)
+avec le commit e12035a
+- Seed 30 N = 1000 modele clonalité sans biais + trioecie mêmes paramètres que les seeds 16 à 19. 
+	(la totalité des simulations ont fixé les hermaphrodites autour de 200 générations : perte de la cms 
+	j'ai une simu test avec une initialzation avec moins d'hermaphrodites (1/20 le complement pour faire un 1/4 ont été initialisé comme des femelles) je tombe sur des effectifs "stables" ~650 herm ~100 males (50 + 50) et 250. femelles qu s'est finit par extinction des males probablement stochastique (les effectifs avaient l'air stables jusque là) femelles donc modifie complétement le système.)
+- Seed 31 N = 1000 Modele clonalité biasé $c=1$ $p=0.2$ $K=0$, et $AgeMax=2$
+
+remarque les simulations de combinaison modele clonalité et trioecie ne sont pas exploitable : erreur dans mon code corrigée avec commit e12035a
 
 # Point Analyse Simulations
 
-Cette section a été modifié plusiseurs fois pour tracer les changement suivre les commits git.
+Cette section a été modifié plusiseurs fois pour tracer les changements suivre les commits git.
 
-### Comparaison modèle mortalité et modèle null (scriptCompSm.py)
-
-tableau : en premier la moyenne pour le modèle focal en 2eme celle du modèle null $N_e$ equivalente, puis resultats test de wilcoxon pour la comparaison des deux groupes.
+tableaux : 
+- Sauf préision contraire : en premier la moyenne pour le modèle focal en 2eme celle du modèle null $N_e$ equivalente, puis resultats test de wilcoxon pour la comparaison des deux groupes.
 
 Pour le premier tableau sur les allèles
 colone :
-- Ne (F) : Ne estimé avec $\hat\theta_F$
-- Ne (Vs) : Ne estimé avec $\hat\theta_{V_s}$
-- He (iam) : heterozigotie attendue sous panmixie pour loci infinite allele model (locus nucléaire)
-- Ne : estimation Ne à partir colonne precédente 
-- Fis global pour les loci microsat $L=10$ (moins les locis non polymorphes) $$\frac1L\times\frac{\sum H_o}{\sum H_e}$$
+- **Ne (F)** : Ne estimé avec $\hat\theta_F$
+- **Ne (Vs)** : Ne estimé avec $\hat\theta_{V_s}$
+- **He (iam)** : heterozigotie attendue sous panmixie pour loci infinite allele model (locus nucléaire)
+- **Ne (iam)** : estimation Ne à partir colonne precédente 
+- **Fis** :  Fis global pour les loci microsat $L=10$ (moins les locis non polymorphes) $$\frac1L\times\frac{\sum H_o}{\sum H_e}$$
+- **N all** : nombre moyen d'allèles par loci
+- **N all S** : dans le cas avec trioecie, nombre d'allèles moyen par loci pour chaque phenotype sexuel dans ordre : hermaphrodites males males+CMS femelles (correction pour différences effectis : je prends la moyenne sur 100 repetitions de la moyenne alleles par loci de $K$ individus tirés avec remise dans chaque sexe. Où $K$ est l'effectif le plus faible (j'ai exclu les cas avec $K<=5$)) 
+
+### Comparaison modèle mortalité et modèle null (scriptCompSm.py)
 
 ##### Avec Sm=0.5
 | M surv b | Mnull eq | Ne (F)                                | Ne (Vs)                               | He (iam)                           | Ne (iam)         | Fis                                        | N all                                |
@@ -386,11 +399,44 @@ colone :
 | $N=200$  | $N=178$  | 174.35, 185.53 (w = 4430, p = 0.16)   | 159.94, 162.25 (w = 4642, p = 0.38)   | 0.402, 0.400 (W = 5055, p = 0.89)  | 167.93, 166.60   | -6.3e-3, -6.0e-3 (w = 5036, p = 0.93)      | 3.14, 3.09 (w = 5452.5, p = 0.27)    |
 | $N=1000$ | $N=889$  | 916.18, 891.87 (w = 5294, p = 0.47)   | 895.14, 845.31 (w = 5446, p = 0.28)   | 0.786, 0.789 (w = 4907, p = 0.35)  | 918.35, 934.65   | -1.1e-4, -4.9e-5 (w = 4616, p = 0.35)      | 6.08, 6.05 (w = 5317.5, p = 0.44)    |
 | $N=5000$ | $N=4444$ | 4359.67, 4389.08 (w = 4984, p = 0.97) | 4000.02, 4023.73 (w = 5155, p = 0.71) | 0.948, 0.945 (w = 5568, p = 0.17)  | 4586.67, 4329.27 | -1.6e-5, -2.3e-5 (w = 5198, p = 0.63)      | 12.22, 12.22 (w = 5119, p = 0.77)    |
+
+
+##### Avec Sm=0.75
+| M trio   | Mnull eq | Ne (F)                                | Ne (Vs)                              | He (iam)                            | Ne (iam)        | Fis                                    | N all                             |
+|----------|----------|---------------------------------------|--------------------------------------|-------------------------------------|-----------------|----------------------------------------|-----------------------------------|
+| $N=50$   | $N=49$   | 52.30, 46.63 (w = 5630, p = 0.12)     | 45.31, 47.49 (w = 5152, p = 0.71)    | 0.136, 0.160 (w = 4829.5, p = 0.67) | 39.49, 47.66    | -2.2e-3, -2.8e-3 (w = 5164, p = 0.69)  | 1.78, 1.76 (w = 5228.5, p = 0.57) |
+| $N=200$  | $N=196$  | 197.10, 202.00 (w = 4880, p = 0.77)   | 177.06, 179.46 (w = 4994, p = 0.99)  | 0.440, 0.425 (w = 5083, p = 0.84)   | 196.60, 185.01  | -3.3e-4, -2.2e-4 (w = 4891, p = 0.79)  | 3.17, 3.23 (w = 4520, p = 24)     |
+| $N=1000$ | $N=980$  | 1000.15, 939.98 (w = 5746, p = 0.068) | 934.89, 927.48 (w =  5143, p = 0.73) | 0.799, 0.809 (w = 5005, p = 0.99)   | 995.27, 1057.41 | -1.8e-4, -1.6e-4 (w = 4925, p = 0.86)  | 6.33, 6.21 (w = 5751, p = 0.066)  |
+5000 pas encore tournés
+
 remarques :
-- pour le Fis la variance à l'air plus elevée pour le modèle surv biaisé que pour le modèle null dans certains cas 50 et 5000.
+- pour le Fis la variance à l'air plus faible pour le modèle surv biaisé que pour le modèle null dans certains cas par ex : 50 et 5000 (c'est un peu bizarre).
 
 ### Comparaison modèle trioecie et modèle null (scriptCompTrio.py)
 
 ##### Avec g=1.3, a=4.3, s=0.5, d=0, em=0.9
+| M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | Fis                                      | N all                                  | N all S                  |
+|----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|------------------------------------------|----------------------------------------|--------------------------|
+| $N=50$   | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                        | /                                      |                          |
+| $N=200$  | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                        | /                                      |                          |
+| $N=1000$ | 20%         | $N=132$  | 132.33, 135.54 (w = 3740, p = 0.46) | 132.25, 121.76 (w = 4338, p = 0.33) | 0.352, 0.321 (w = 4307, p = 0.38) | 136.06, 118.34 | 2.1e-3, -3.8e-4 (w = 6648, p = **2e-4**) | 3.68, 2.69 (w = 7989.5, p = **1e-30**) | (2.10, 2.12, 2.31, 2.30) |
+| $N=5000$ |             |          |                                     |                                     |                                   |                |                                          |                                        |                          |
+
+##### Avec g=1.1, a=4.8, s=0.8, d=0.3, em=0.9
+| M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | Fis                                       | N all                                  | N all S                  |
+|----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|-------------------------------------------|----------------------------------------|--------------------------|
+| $N=50$   | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                         | /                                      | /                        |
+| $N=200$  | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                         | /                                      | /                        |
+| $N=1000$ | 7%          | $N=82$   | 82.41, 82.76 (w = 4692, p = 0.91)   | 77.70, 73.52 (w = 4977, p = 0.40)   | 0.263, 0.236 (w = 5180, p = 0.17) | 89.03, 77.28   | 3.3e-3, -1.7e-3 (w = 8007, p = **4e-18**) | 3.40, 2.16 (w = 9298, p = **3e-33**)   | (1.60, 1.64, 1.79, 1.79) |
+| $N=5000$ | 0%          | $N=409$  | 408.94, 421.00 (w = 4864, p = 0.74) | 390.80, 399.26 (w = 4849, p = 0.71) | 0.599, 0.593 (w = 5016, p = 0.97) | 363.83, 373,87 | 3.7e-3, -4.9e-3 (w = 9998, p = **2e-34**) | 5.43, 4.39 (w = 9662.5, p = **4e-30**) | (3.50, 3.54, 3.81, 3.80) |
+
+**remarques** : 
+Dans les deux cas, on observe un exces d'allèles rares (colonnes Nball et figures SFS). Interpretation : 
+- Juste un effet de forte différence entre N et Ne : à chaque génération il y a en moyenne $(2\times N - 2\times N_e)\mu$ copies supplémentaires qui mutent chez des indivius qui participent peu à la reproduction. Quand la dérive est forte il y a peu d'allèles dans le pool et presque chaque mutation créé un nouvel allèle. Dans une pop avec Ne grand, il y a peu de dérive et plus de polymorphisme donc une mutation 
+a très peu de chance d'introduire un npuvel allèle.
+	- Autre remarque dans ce sens :  j'ai fait des simus tests pour avoir une diff de $N$ et $Ne$ plus grande dans le modèle avec différence de mortalité (50 repetitions) $Sm=0.1$ et $N = 1000$ (que j'ai comparé à $N=333$ modele nul) et on remarque aussi un exces allèles rares (nb all : 4.32, 4.008 (w = 1854.5, p = 3e-5))
+
+### Comparaisons par sexes
+
 
 # Références
