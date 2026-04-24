@@ -373,6 +373,118 @@ avec le commit e12035a
 
 remarque les simulations de combinaison modele clonalité et trioecie ne sont pas exploitable : erreur dans mon code corrigée avec commit e12035a
 
+
+# Jeudi 23/04
+
+## Simulations 
+lancés avec le commit e12035a (une partie des simulations lancées avant lundi ont été interompues) :
+- seeds 11, 15 et 19 du tableau
+
+
+## Ne trioecie
+
+### Calcul de toutes les contributions pour les coefficients $\beta$
+
+#### Cas simple : contributions à M 
+
+pour M (XYn) il faut un ovule avec cytotype $n$ et pollen avec $Y$ La
+contribution génétique des parents (pour allele autosomal) c'est 1/2
+pollen et 1/2 ovules.
+
+On trouve facilement que $P(M \leftarrow F) = 0$, et que
+$P(M \leftarrow H) = 1\times \frac12$. Pour $M$ et $C$ la contribution
+devrait dépendre des fréquences relatives de pollen. Pollen total
+produit par $M$ : $\alpha N_M$ (c'est le $\alpha$ du modèle de trioecie
+pas celui de l'équation (1)) et pollen total produit par $C$ :
+$(1-em)\alpha N_C$.
+$P(M \leftarrow M) = \frac{\alpha N_M}{\alpha N_M + (1-em)\alpha N_C }\times \frac12 = \frac{N_M}{2(N_M + (1-em )N_C)}$
+et $P(M \leftarrow C) = \frac{(1-em )N_C}{2(N_M + (1-em )N_C)}$.
+
+#### De la même manière contributions à C 
+
+Pour C (XYc) il faut un ovule avec cytotype $c$ et pollen avec $Y$
+
+\
+Avec le même raisonnement que précédement, on trouve que
+
+-   $P(C \leftarrow F) = \frac12$
+
+-   $P(C \leftarrow H) = 0$
+
+-   $P(C \leftarrow M) = \frac{N_M}{2(N_M + (1-em )N_C)}$
+
+-   $P(C \leftarrow C) = \frac{(1-em )N_C}{2(N_M + (1-em )N_C)}$
+
+#### Contributions à F
+
+Pour F (XXc) il faut un ovule avec cytotype $c$ et pollen avec $X$
+
+\
+On a $P(C \leftarrow F) = \frac12$. Le reste doit se déduire des
+proportions relatives de pollen portant X.
+de façon absolues :
+-   $H$ : $2\times N_H$
+
+-   $M$ : $N_M\alpha$
+
+-   $C$ : $N_C\alpha(1-e_m)$
+
+donc :
+
+-   $P(F \leftarrow H)$ :
+    $\frac12\times\frac{2N_H}{2N_H + N_M\alpha + N_C\alpha(1-e_m)}$
+
+-   $P(F \leftarrow M)$ :
+    $\frac12\times\frac{N_M\alpha}{2N_H + N_M\alpha + N_C\alpha(1-e_m)}$
+
+-   $P(F \leftarrow C)$ :
+    $\frac12\times\frac{N_C\alpha(1-e_m)}{2N_H + N_M\alpha + N_C\alpha(1-e_m)}$
+
+#### Contributions à H
+
+Pour H (XXn) il faut un ovule avec cytotype $n$ et pollen avec $X$ .
+
+\
+On a $P(H\leftarrow F) = 0$. Pour le reste il faut considérer
+l'autofécondation : L'ensemble des probabilité sont écrite dans
+l'hypothèse où le zygote a survécu (i.e. on normalise par
+$s(1-d)+(1-s) =1-sd$)
+
+1.  l'ovule vient forcément d'un hermaphrodite donc l'autofécondation
+    impacte que la contribution sur le pollen (de toute façon ça revient
+    au même de faire la considération inverse)
+
+2.  il y a deux événements 1 - présence d'autof 2 - survie à la
+    dépression de consanguinité
+
+3.  les événement qui nous interessent sont $1\cap 2$ et son
+    complémentaire. Pour $1\cap 2$ : $\frac{s(1-d)}{1-sd}$
+
+4.  le complémentaire :
+    $1 -\frac{s(1-d)}{1-sd}  = \frac{1-sd - s(1-d)}{1-sd}  = \frac{1- s}{1-sd}$
+
+(pas sur de ma justification : est ce que je donne pas trop de poids à
+la fécondation croisée)
+$$P(H \leftarrow H) = \frac12 + \frac12\left[\frac{s(1-d)}{1-sd}+  \frac{1- s}{1-sd} \times\frac{2N_H}{2N_H + N_M\alpha + N_C\alpha(1-e_m)} \right]$$
+quand $s\rightarrow1$ ca donne bien $P(H \leftarrow H) \rightarrow 1$ on
+peut en déduire les derniers :
+
+-   $P(F \leftarrow M)$ :
+    $\frac12\times \frac{1- s}{1-sd} \times\frac{N_M\alpha}{2N_H + N_M\alpha + N_C\alpha(1-e_m)}$
+
+-   $P(F \leftarrow C)$ :
+    $\frac12\times \frac{1- s}{1-sd} \times\frac{N_C\alpha(1-e_m)}{2N_H + N_M\alpha + N_C\alpha(1-e_m)}$
+
+
+### Points sur les autres coefficients
+
+En fait pour les $\gamma_{rsu}$ des classes sans autofécondations il devraient
+valoir 1/2 (cela semble se vérifier sur les simulations les Fis des classes M,C,F sont ~0) : il y a aucune force qui poussent les allèles pris au hasard ait une proba d'indentity by descent plus forte que sous panmixie (je crois). Les
+$\gamma_{rsH}$ devraient valoir $\frac12 + \frac{F_{IS, H}}{2}$ (par contre on peut pas prédire facilement à partir des paramètres du modèle à cause des structuration entre classes : les Fst vont probablement intervenir dans le calcul de de $F_{IS, H}$) par contre on peut l'estimer.
+
+pour les coefficient $\alpha_i$ je suis pas sur d'avoir compris exactement ce qu'ils signifient. **suffisait de lire la page avant** : c'est la contribution moyenne à la pop (on peut utiliser cette aproximation par ce que la démographie agit sur une echelle de temps plus courte ques le processus de coalescence)
+$\alpha_r$ est le $r$-eme élement du vecteur propre dominant (normalisé) à gauche de la matrice décrivant le flux entre les classes (Laporte et Charlesworth 2002)
+
 # Point Analyse Simulations
 
 Cette section a été modifié plusiseurs fois pour tracer les changements suivre les commits git.
@@ -386,7 +498,7 @@ colone :
 - **Ne (Vs)** : Ne estimé avec $\hat\theta_{V_s}$
 - **He (iam)** : heterozigotie attendue sous panmixie pour loci infinite allele model (locus nucléaire)
 - **Ne (iam)** : estimation Ne à partir colonne precédente 
-- **Fis** :  Fis global pour les loci microsat $L=10$ (moins les locis non polymorphes) $$\frac1L\times\frac{\sum H_o}{\sum H_e}$$
+- **Fis** :  Fis global pour les loci microsat $1 - {\sum H_o}{\sum H_e}$ *Mon ancienne façon de calculer les Fis n'avait pas de sens*
 - **N all** : nombre moyen d'allèles par loci
 - **N all S** : dans le cas avec trioecie, nombre d'allèles moyen par loci pour chaque phenotype sexuel dans ordre : hermaphrodites males males+CMS femelles (correction pour différences effectis : je prends la moyenne sur 100 repetitions de la moyenne alleles par loci de $K$ individus tirés avec remise dans chaque sexe. Où $K$ est l'effectif le plus faible (j'ai exclu les cas avec $K<=5$)) 
 
@@ -395,18 +507,18 @@ colone :
 ##### Avec Sm=0.5
 | M surv b | Mnull eq | Ne (F)                                | Ne (Vs)                               | He (iam)                           | Ne (iam)         | Fis                                        | N all                                |
 |----------|----------|---------------------------------------|---------------------------------------|------------------------------------|------------------|--------------------------------------------|--------------------------------------|
-| $N=50$   | $N=44$   | 44.29, 44.93 (w = 5154, p = 0.71)     | 41.66, 40.84 (w = 5242, p = 0.56)     | 0.142, 0.158 (w  = 4807, p = 0.63) | 41.53, 46.08     | -1.5e-3, -3.6e-3 (w = 5925, p = **0.024**) | 1.74, 1.68 (w = 5885, p = **0.029**) |
-| $N=200$  | $N=178$  | 174.35, 185.53 (w = 4430, p = 0.16)   | 159.94, 162.25 (w = 4642, p = 0.38)   | 0.402, 0.400 (W = 5055, p = 0.89)  | 167.93, 166.60   | -6.3e-3, -6.0e-3 (w = 5036, p = 0.93)      | 3.14, 3.09 (w = 5452.5, p = 0.27)    |
-| $N=1000$ | $N=889$  | 916.18, 891.87 (w = 5294, p = 0.47)   | 895.14, 845.31 (w = 5446, p = 0.28)   | 0.786, 0.789 (w = 4907, p = 0.35)  | 918.35, 934.65   | -1.1e-4, -4.9e-5 (w = 4616, p = 0.35)      | 6.08, 6.05 (w = 5317.5, p = 0.44)    |
-| $N=5000$ | $N=4444$ | 4359.67, 4389.08 (w = 4984, p = 0.97) | 4000.02, 4023.73 (w = 5155, p = 0.71) | 0.948, 0.945 (w = 5568, p = 0.17)  | 4586.67, 4329.27 | -1.6e-5, -2.3e-5 (w = 5198, p = 0.63)      | 12.22, 12.22 (w = 5119, p = 0.77)    |
+| $N=50$   | $N=44$   | 44.29, 44.93 (w = 5154, p = 0.71)     | 41.66, 40.84 (w = 5242, p = 0.56)     | 0.142, 0.158 (w  = 4807, p = 0.63) | 41.53, 46.08     | -2.0e-2, -2.6e-2 (w = 5245, p = **0.029**) | 1.74, 1.68 (w = 5885, p = **0.029**) |
+| $N=200$  | $N=178$  | 174.35, 185.53 (w = 4430, p = 0.16)   | 159.94, 162.25 (w = 4642, p = 0.38)   | 0.402, 0.400 (W = 5055, p = 0.89)  | 167.93, 166.60   | -7.6e-3, -7.1e-3 (w = 5452.5, p = 0.27)    | 3.14, 3.09 (w = 5452.5, p = 0.27)    |
+| $N=1000$ | $N=889$  | 916.18, 891.87 (w = 5294, p = 0.47)   | 895.14, 845.31 (w = 5446, p = 0.28)   | 0.786, 0.789 (w = 4907, p = 0.35)  | 918.35, 934.65   | -1.3e-3, -6.0e-4 (w = 4616, p = 0.35)      | 6.08, 6.05 (w = 5317.5, p = 0.44)    |
+| $N=5000$ | $N=4444$ | 4359.67, 4389.08 (w = 4984, p = 0.97) | 4000.02, 4023.73 (w = 5155, p = 0.71) | 0.948, 0.945 (w = 5568, p = 0.17)  | 4586.67, 4329.27 | -1.9e-4, -2.7e-4 (w = 5119, p = 0.63)      | 12.22, 12.22 (w = 5119, p = 0.77)    |
 
 
 ##### Avec Sm=0.75
 | M trio   | Mnull eq | Ne (F)                                | Ne (Vs)                              | He (iam)                            | Ne (iam)        | Fis                                    | N all                             |
 |----------|----------|---------------------------------------|--------------------------------------|-------------------------------------|-----------------|----------------------------------------|-----------------------------------|
-| $N=50$   | $N=49$   | 52.30, 46.63 (w = 5630, p = 0.12)     | 45.31, 47.49 (w = 5152, p = 0.71)    | 0.136, 0.160 (w = 4829.5, p = 0.67) | 39.49, 47.66    | -2.2e-3, -2.8e-3 (w = 5164, p = 0.69)  | 1.78, 1.76 (w = 5228.5, p = 0.57) |
-| $N=200$  | $N=196$  | 197.10, 202.00 (w = 4880, p = 0.77)   | 177.06, 179.46 (w = 4994, p = 0.99)  | 0.440, 0.425 (w = 5083, p = 0.84)   | 196.60, 185.01  | -3.3e-4, -2.2e-4 (w = 4891, p = 0.79)  | 3.17, 3.23 (w = 4520, p = 24)     |
-| $N=1000$ | $N=980$  | 1000.15, 939.98 (w = 5746, p = 0.068) | 934.89, 927.48 (w =  5143, p = 0.73) | 0.799, 0.809 (w = 5005, p = 0.99)   | 995.27, 1057.41 | -1.8e-4, -1.6e-4 (w = 4925, p = 0.86)  | 6.33, 6.21 (w = 5751, p = 0.066)  |
+| $N=50$   | $N=49$   | 52.30, 46.63 (w = 5630, p = 0.12)     | 45.31, 47.49 (w = 5152, p = 0.71)    | 0.136, 0.160 (w = 4829.5, p = 0.67) | 39.49, 47.66    | -1.5e-2, -1.9e-2 (w = 5174, p = 0.67)  | 1.78, 1.76 (w = 5228.5, p = 0.57) |
+| $N=200$  | $N=196$  | 197.10, 202.00 (w = 4880, p = 0.77)   | 177.06, 179.46 (w = 4994, p = 0.99)  | 0.440, 0.425 (w = 5083, p = 0.84)   | 196.60, 185.01  | -3.8e-3, -2.8e-3 (w = 4903, p = 0.81)  | 3.17, 3.23 (w = 4520, p = 24)     |
+| $N=1000$ | $N=980$  | 1000.15, 939.98 (w = 5746, p = 0.068) | 934.89, 927.48 (w =  5143, p = 0.73) | 0.799, 0.809 (w = 5005, p = 0.99)   | 995.27, 1057.41 | -2.2e-3, -1.9e-3 (w = 4925, p = 0.86)  | 6.33, 6.21 (w = 5751, p = 0.066)  |
 5000 pas encore tournés
 
 remarques :
@@ -415,20 +527,30 @@ remarques :
 ### Comparaison modèle trioecie et modèle null (scriptCompTrio.py)
 
 ##### Avec g=1.3, a=4.3, s=0.5, d=0, em=0.9
-| M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | Fis                                      | N all                                  | N all S                  |
-|----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|------------------------------------------|----------------------------------------|--------------------------|
-| $N=50$   | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                        | /                                      |                          |
-| $N=200$  | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                        | /                                      |                          |
-| $N=1000$ | 20%         | $N=132$  | 132.33, 135.54 (w = 3740, p = 0.46) | 132.25, 121.76 (w = 4338, p = 0.33) | 0.352, 0.321 (w = 4307, p = 0.38) | 136.06, 118.34 | 2.1e-3, -3.8e-4 (w = 6648, p = **2e-4**) | 3.68, 2.69 (w = 7989.5, p = **1e-30**) | (2.10, 2.12, 2.31, 2.30) |
-| $N=5000$ |             |          |                                     |                                     |                                   |                |                                          |                                        |                          |
+| M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | N all                                  | N all S                  |
+|----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|----------------------------------------|--------------------------|
+| $N=50$   | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                      |                          |
+| $N=200$  | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                      |                          |
+| $N=1000$ | 20%         | $N=132$  | 132.33, 135.54 (w = 3740, p = 0.46) | 132.25, 121.76 (w = 4338, p = 0.33) | 0.352, 0.321 (w = 4307, p = 0.38) | 136.06, 118.34 | 3.68, 2.69 (w = 7989.5, p = **1e-30**) | (2.10, 2.12, 2.31, 2.30) |
+| $N=5000$ |             |          |                                     |                                     |                                   |                |                                        |                          |
+
+| N    | He (Std)     | Ne cyt |
+|------|--------------|--------|
+| 1000 | 0.613 (0.14) | 396.51 |
+| 5000 |              |        |
 
 ##### Avec g=1.1, a=4.8, s=0.8, d=0.3, em=0.9
-| M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | Fis                                       | N all                                  | N all S                  |
-|----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|-------------------------------------------|----------------------------------------|--------------------------|
-| $N=50$   | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                         | /                                      | /                        |
-| $N=200$  | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                         | /                                      | /                        |
-| $N=1000$ | 7%          | $N=82$   | 82.41, 82.76 (w = 4692, p = 0.91)   | 77.70, 73.52 (w = 4977, p = 0.40)   | 0.263, 0.236 (w = 5180, p = 0.17) | 89.03, 77.28   | 3.3e-3, -1.7e-3 (w = 8007, p = **4e-18**) | 3.40, 2.16 (w = 9298, p = **3e-33**)   | (1.60, 1.64, 1.79, 1.79) |
-| $N=5000$ | 0%          | $N=409$  | 408.94, 421.00 (w = 4864, p = 0.74) | 390.80, 399.26 (w = 4849, p = 0.71) | 0.599, 0.593 (w = 5016, p = 0.97) | 363.83, 373,87 | 3.7e-3, -4.9e-3 (w = 9998, p = **2e-34**) | 5.43, 4.39 (w = 9662.5, p = **4e-30**) | (3.50, 3.54, 3.81, 3.80) |
+| M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | N all                                  | N all S                  |
+|----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|----------------------------------------|--------------------------|
+| $N=50$   | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                      | /                        |
+| $N=200$  | 100%        | /        | /                                   | /                                   | /                                 | /              | /                                      | /                        |
+| $N=1000$ | 7%          | $N=82$   | 82.41, 82.76 (w = 4692, p = 0.91)   | 77.70, 73.52 (w = 4977, p = 0.40)   | 0.263, 0.236 (w = 5180, p = 0.17) | 89.03, 77.28   | 3.40, 2.16 (w = 9298, p = **3e-33**)   | (1.60, 1.64, 1.79, 1.79) |
+| $N=5000$ | 0%          | $N=409$  | 408.94, 421.00 (w = 4864, p = 0.74) | 390.80, 399.26 (w = 4849, p = 0.71) | 0.599, 0.593 (w = 5016, p = 0.97) | 363.83, 373,87 | 5.43, 4.39 (w = 9662.5, p = **4e-30**) | (3.50, 3.54, 3.81, 3.80) |
+
+| N    | He (Std)      | Ne cyt  |
+|------|---------------|---------|
+| 1000 | 0.565 (0.24)  | 324.79  |
+| 5000 | 0.870 (0.046) | 1674.62 |
 
 **remarques** : 
 Dans les deux cas, on observe un exces d'allèles rares (colonnes Nball et figures SFS). Interpretation : 
