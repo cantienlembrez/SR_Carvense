@@ -81,20 +81,21 @@ for R in ["H", "M", "C", "F"]:
     for S in ["H", "M", "C", "F"]:
         for U in ["H", "M", "C", "F"]:
             beta = contrib_tab[Idx[R]][Idx[U]] * contrib_tab[Idx[S]][Idx[U]]
-            print(U, theta[Idx[U]])
             Pc += a[Idx[R]] * a[Idx[S]] * beta * theta[Idx[U]] * gamma[Idx[U]]
 
 
 
 substitutions = {
-g:1.3, alpha:4.3, em:0.9, s:0.5, d:0,
-Fh:4.40037849e-01, H:355.48, M:83.00999999999999, C:1723.89, F:2837.62
-}
+ g:1.1, alpha:4.8, em:0.9, s:0.8, d:0.3,
+ Fh:0.68661903, H:65.64364876, M: 7.24637681, C:350.24154589, F:576.86842853
+ }
+
 
 # substitutions = {
 # g:1.1, alpha:4.8, em:0.9, s:0.8, d:0.3,
 # Fh:6.58661903e-01, H:64.43010753, M:6.78494623655914, C:355.35483871, F:573.43010753
 # }
+
 
 # substitutions = {
 # g:1.1, alpha:4.8, em:0.9, s:0.8, d:0.3,
