@@ -485,9 +485,20 @@ $\gamma_{rsH}$ devraient valoir $\frac12 + \frac{F_{IS, H}}{2}$ (par contre on p
 pour les coefficient $\alpha_i$ je suis pas sur d'avoir compris exactement ce qu'ils signifient. **suffisait de lire la page avant** : c'est la contribution moyenne à la pop (on peut utiliser cette aproximation par ce que la démographie agit sur une echelle de temps plus courte ques le processus de coalescence)
 $\alpha_r$ est le $r$-eme élement du vecteur propre dominant (normalisé) à gauche de la matrice décrivant le flux entre les classes (Laporte et Charlesworth 2002)
 
+# Lundi 27/04
+
+## Simulations
+- Seed 32 M0 avec N=637 (equivalent seed 31)
+- Seed 33, 34 (50 et 200 avec $p = 0.2$, $c_f = 1$ et $c_m = 0$ soit $c=1$ et $K=0$ ancienne notation)
+- Seed 23 N=662 (voir tableau)
+- Seed 35 Clonalité sans biais N=200 c=1 p=0.1 Amax=2
+- seed 36 modèle null equivalent seed 33 N=32
+- seed 37 modèle null equivalent seed 34 N=116
+- seed 38 modele clonalité sans biais N=100 $\mu=10^{-4}$ 1000 replicats c=1 p=0.1 MaxAge = 2 pour estimer la diminution de Ne pour N donné avec ces paramètres normalement ça devrait être proportionel.
+
 # Point Analyse Simulations
 
-Cette section a été modifié plusiseurs fois pour tracer les changements suivre les commits git.
+Cette section a été modifié plusiseurs fois pour tracer les changements suivre les commits git. J'ai pas reussi à mettre tout ce que j'ai fait (l'essentiel est trouvable dans les scripts d'analyse) 
 
 tableaux : 
 - Sauf préision contraire : en premier la moyenne pour le modèle focal en 2eme celle du modèle null $N_e$ equivalente, puis resultats test de wilcoxon pour la comparaison des deux groupes.
@@ -498,10 +509,13 @@ colone :
 - **Ne (Vs)** : Ne estimé avec $\hat\theta_{V_s}$
 - **He (iam)** : heterozigotie attendue sous panmixie pour loci infinite allele model (locus nucléaire)
 - **Ne (iam)** : estimation Ne à partir colonne precédente 
-- **Fis** :  Fis global pour les loci microsat $1 - {\sum H_o}{\sum H_e}$ *Mon ancienne façon de calculer les Fis n'avait pas de sens*
+- **Fis** :  Fis global pour les loci microsat $1 - \frac{\sum H_o}{\sum H_e}$ *Mon ancienne façon de calculer les Fis n'avait pas de sens* (voir Nei 1977)
 - **N all** : nombre moyen d'allèles par loci
 - **N all S** : dans le cas avec trioecie, nombre d'allèles moyen par loci pour chaque phenotype sexuel dans ordre : hermaphrodites males males+CMS femelles (correction pour différences effectis : je prends la moyenne sur 100 repetitions de la moyenne alleles par loci de $K$ individus tirés avec remise dans chaque sexe. Où $K$ est l'effectif le plus faible (j'ai exclu les cas avec $K<=5$)) 
 
+
+Les matrices de Fst n'avait pas de sens non plus (il manquait une division par 2 dans le calculs des hétérozygoties + mauvaise facon d'estimer Nei 1973)
+Tableau des Fst calcule comme $1 - \frac{\sum Hs}{\sum Ht}$ Hs moyenne des hétérozygotie pondéré par les effectifs 
 ### Comparaison modèle mortalité et modèle null (scriptCompSm.py)
 
 ##### Avec Sm=0.5
@@ -539,6 +553,7 @@ remarques :
 | 1000 | 0.613 (0.14) | 396.51 |
 | 5000 |              |        |
 
+
 ##### Avec g=1.1, a=4.8, s=0.8, d=0.3, em=0.9
 | M trio   | Fix. dioecy | Mnull eq | Ne (F)                              | Ne (Vs)                             | He (iam)                          | Ne (iam)       | N all                                  | N all S                  |
 |----------|-------------|----------|-------------------------------------|-------------------------------------|-----------------------------------|----------------|----------------------------------------|--------------------------|
@@ -552,13 +567,90 @@ remarques :
 | 1000 | 0.565 (0.24)  | 324.79  |
 | 5000 | 0.870 (0.046) | 1674.62 |
 
+
 **remarques** : 
 Dans les deux cas, on observe un exces d'allèles rares (colonnes Nball et figures SFS). Interpretation : 
 - Juste un effet de forte différence entre N et Ne : à chaque génération il y a en moyenne $(2\times N - 2\times N_e)\mu$ copies supplémentaires qui mutent chez des indivius qui participent peu à la reproduction. Quand la dérive est forte il y a peu d'allèles dans le pool et presque chaque mutation créé un nouvel allèle. Dans une pop avec Ne grand, il y a peu de dérive et plus de polymorphisme donc une mutation 
 a très peu de chance d'introduire un npuvel allèle.
 	- Autre remarque dans ce sens :  j'ai fait des simus tests pour avoir une diff de $N$ et $Ne$ plus grande dans le modèle avec différence de mortalité (50 repetitions) $Sm=0.1$ et $N = 1000$ (que j'ai comparé à $N=333$ modele nul) et on remarque aussi un exces allèles rares (nb all : 4.32, 4.008 (w = 1854.5, p = 3e-5))
 
-### Comparaisons par sexes
 
+# Récapitulatifs des simulations seedés
+j'ai un peu fait n'importe quoi :
+| SEED | Modèle               | Commit  | N    | Paramètres                                      |
+|------|----------------------|---------|------|-------------------------------------------------|
+| 0    | Survie diff          | 510d7eb | 50   | Sm = 0.5                                        |
+| 1    | Survie diff          | 510d7eb | 200  | Sm = 0.5                                        |
+| 2    | Survie diff          | 510d7eb | 1000 | Sm = 0.5                                        |
+| 3    | Survie diff          | 510d7eb | 5000 | Sm = 0.5                                        |
+| 4    | Null (WF)            | 510d7eb | 44   | /                                               |
+| 5    | Null (WF)            | 510d7eb | 178  | /                                               |
+| 6    | Null (WF)            | 510d7eb | 889  | /                                               |
+| 7    | Null (WF)            | 510d7eb | 4444 | /                                               |
+| 8    | Survie diff          | 510d7eb | 50   | Sm = 0.75                                       |
+| 9    | Survie diff          | 510d7eb | 200  | Sm = 0.75                                       |
+| 10   | Survie diff          | a2fcdd3 | 1000 | Sm = 0.75                                       |
+| 11   | Survie diff          | e12035a | 5000 | Sm = 0.75                                       |
+| 12   | Null (WF)            | e12035a | 49   | /                                               |
+| 13   | Null (WF)            | e12035a | 196  | /                                               |
+| 14   | Null (WF)            | e12035a | 980  | /                                               |
+| 15   | Null (WF)            | e12035a | 4898 | /                                               |
+| 16   | Trioécie             | 4f8e646 | 50   | g=1.3, a=4.3, s=0.5, d=0, em=0.9                |
+| 17   | Trioécie             | 4f8e646 | 200  | g=1.3, a=4.3, s=0.5, d=0, em=0.9                |
+| 18   | Trioécie             | 4f8e646 | 1000 | g=1.3, a=4.3, s=0.5, d=0, em=0.9                |
+| 19   | Trioécie             | f16a881 | 5000 | g=1.3, a=4.3, s=0.5, d=0, em=0.9                |
+| 20   | Null (WF)            | a2fcdd3 | 132  | /                                               |
+| 21   | /                    | /       | /    | /                                               |
+| 22   | /                    | /       | /    | /                                               |
+| 23   | Null (WF)            | e12035a | 662  | /                                               |
+| 24   | Trioécie             | 4f8e646 | 50   | g=1.1, a=4.8, s=0.8, d=0.3, em=0.9              |
+| 25   | Trioécie             | 4f8e646 | 200  | g=1.1, a=4.8, s=0.8, d=0.3, em=0.9              |
+| 26   | Trioécie             | 4f8e646 | 1000 | g=1.1, a=4.8, s=0.8, d=0.3, em=0.9              |
+| 27   | Trioécie             | 4f8e646 | 5000 | g=1.1, a=4.8, s=0.8, d=0.3, em=0.9              |
+| 28   | Null (WF)            | a2fcdd3 | 82   | /                                               |
+| 29   | Null (WF)            | a2fcdd3 | 409  | /                                               |
+| 30   | Clonalité + trioecie | e12035a | 1000 | p=0.1, c=1 + paramètres seeds 16–19             |
+| 31   | Clonalité biaisée    | e12035a | 1000 | p=0.2,cf=1, cm=0, AgeMax=2                      |
+| 32   | Null (WF)            | e12035a | 637  | /                                               |
+| 33   | Clonalité biaisée    | e12035a | 50   | p=0.2, c_f=1, c_m=0, AgeMax=2                   |
+| 34   | Clonalité biaisée    | e12035a | 200  | p=0.2, c_f=1, c_m=0, AgeMax=2                   |
+| 35   | Clonalité sans biais | e12035a | 200  | c=1, p=0.1, AgeMax=2                            |
+| 36   | Null (WF)            | e12035a | 32   | /                                               |
+| 37   | Null (WF)            | e12035a | 116  | /                                               |
+| 38   | Clonalité sans biais | e12035a | 100  | μ=10⁻⁴, 1000 réplications, c=1, p=0.1, AgeMax=2 |
 
 # Références
+- Charlesworth, B. et D. Charlesworth (2010). Elements of Evolutionary Genetics. English. Roberts et Company.
+isbn : 9780981525.
+- Ellegren, H. (2004). “Microsatellites : simple sequences with complex evolution”. In : Nature reviews genetics
+5.6, p. 435-445.
+- Field, D. L., M. Pickup et S. C. Barrett (2013a). “Comparative analyses of sex-ratio variation in dioecious
+flowering plants”. In : Evolution 67.3, p. 661-672.
+- Field, D. L., M. Pickup et S. C. Barrett (2013b). “Ecological context and metapopulation dynamics affect
+sex-ratio variation among dioecious plant populations”. In : Annals of Botany 111.5, p. 917-923.
+- Haller, B. C., P. L. Ralph et P. W. Messer (2026). “SLiM 5 : Eco-evolutionary simulations across multiple
+chromosomes and full genomes”. In : Molecular Biology and Evolution 43.1, msaf313.
+- Heimann, B. et G. Cussans (1996). “The importance of seeds and sexual reproduction in the population biology
+of Cirsium arvense-a literature review”. In : Weed Research 36.6, p. 493-503.
+- Kay, Q. O. N. (1985). “Hermaphrodites and subhermaphrodites in a reputedly dioecious plant, Cirsium arvense
+(L.) Scop.” In : New Phytologist 100.3, p. 457-472.
+- Lalonde, R. et B. Roitberg (1994). “Mating system, life-history, and reproduction in Canada thistle (Cirsium
+arvense ; Asteraceae)”. In : American Journal of Botany 81.1, p. 21-28.
+- Laporte, V. et B. Charlesworth (2002). “Effective population size and population subdivision in demographically
+structured populations”. In : Genetics 162.1, p. 501-519.
+- Leathwick, D. et G. Bourdôt (2012). “A conceptual model for the population dynamics of Cirsium arvense in
+a New Zealand pasture”. In : New Zealand Journal of Agricultural Research 55.4, p. 371-384.
+- Lloyd, D. G. (1974). “Theoretical sex ratios of dioecious and gynodioecious angiosperms”. In : Heredity 32.1,
+p. 11-34.
+- Nei, M. (1973). “Analysis of gene diversity in subdivided populations”. In : Proceedings of the national academy of
+sciences 70.12, p. 3321-3323.
+- Nguyen, M. T. et J. Pannell (2025). “The evolution and maintenance of trioecy with cytoplasmic male sterility”.
+In : Heredity 134.1, p. 1-9.
+- Nikolic, N. et C. Chevalet (2014). “Detecting past changes of effective population size”. In : Evolutionary
+applications 7.6, p. 663-681.
+- Slotta, T. A. B., M. E. Foley, S. Chao, R. A. Hufbauer et D. P. Horvath (2010). “Assessing genetic diversity
+of Canada thistle (Cirsium arvense) in North America with microsatellites”. In : Weed Science 58.4, p. 387-394.
+- Solé, M., W. Durka, S. Eber et R. Brandl (2004). “Genotypic and genetic diversity of the common weed
+Cirsium arvense (Asteraceae)”. In : International Journal of Plant Sciences 165.3, p. 437-444.
+- Xu, H. et Y.-X. Fu (2004). “Estimating effective population size or mutation rate with microsatellites”. In : Genetics
+166.1, p. 555-563.
