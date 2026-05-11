@@ -35,13 +35,19 @@ chaque simulations est stocké dans un dossier Simulations/M_NX_Y, X taille de l
 
 # Analyse
 `ScriptAnalysis/AnalysisFuncs.py` contient les fonctions de base pour l'analyse (hétéroozygotie, nb génotypes, ...)
+
 `ScriptAnalysis/scriptCompSm.py` analyse modèle dioïque biaisé et comparaison avec modèle null
+
 `ScriptAnalysis/scriptCompTrio.py` analyse modèle trioécie et comparaison avec modèle null
+
 `ScriptAnalysis/scriptCompCp.py` analyse modèle clonal et comparaison avec modèle null
+
 `ScriptAnalysis/scriptCompCpb.py` analyse modèle clonal avec biais et comparaison avec modèle null
+
 `ScriptAnalysis/Compdiff.py` comparaison des différentiations entre males et femlles pour une même taille ($N$) entre tout les modèles (pour voir comment se comportent les indices)
 
 # Autres
 `TrioecyFreqs.py` explorations des paramètres sur les équilibres du modèle de Nguyen et Pannell 2025
+
 `Ne_trio.py` application de la formule générale du Ne basé sur la coalescence (Charlesworth et Charlesworth 2010) au cas de la trioécie.
 
